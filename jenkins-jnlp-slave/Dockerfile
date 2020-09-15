@@ -41,7 +41,7 @@ RUN apt-get update && apt-get dist-upgrade -y \
     && curl "https://releases.hashicorp.com/terraform/${TERRAFORM_11_VERSION}/terraform_${TERRAFORM_11_VERSION}_linux_amd64.zip" -o "terraform.zip" \
       && unzip terraform.zip && mv terraform /usr/bin/tf11 && rm terraform.zip \
     
-    #### install terraform 13
+    ##### install terraform 13
     && curl "https://releases.hashicorp.com/terraform/${TERRAFORM_13_VERSION}/terraform_${TERRAFORM_13_VERSION}_linux_amd64.zip" -o "terraform.zip" \
       && unzip terraform.zip && mv terraform /usr/bin && rm terraform.zip \
 
