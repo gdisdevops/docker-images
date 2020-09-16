@@ -5,6 +5,7 @@ USER root
 ARG VAULT_VERSION=1.5.3
 ARG PACKER_VERSION=1.6.2
 ARG TERRAFORM_11_VERSION=0.11.14
+ARG TERRAFORM_12_VERSION=0.12.29
 ARG TERRAFORM_13_VERSION=0.13.2
 ARG KUBECTL_VERSION=1.18.0
 
@@ -40,7 +41,11 @@ RUN apt-get update && apt-get dist-upgrade -y \
     #### install terraform 11
     && curl "https://releases.hashicorp.com/terraform/${TERRAFORM_11_VERSION}/terraform_${TERRAFORM_11_VERSION}_linux_amd64.zip" -o "terraform.zip" \
       && unzip terraform.zip && mv terraform /usr/bin/tf11 && rm terraform.zip \
-    
+      
+    #### install terraform 12
+    && curl "https://releases.hashicorp.com/terraform/${TERRAFORM_12_VERSION}/terraform_${TERRAFORM_12_VERSION}_linux_amd64.zip" -o "terraform.zip" \
+      && unzip terraform.zip && mv terraform /usr/bin/tf12 && rm terraform.zip \
+      
     ##### install terraform 13
     && curl "https://releases.hashicorp.com/terraform/${TERRAFORM_13_VERSION}/terraform_${TERRAFORM_13_VERSION}_linux_amd64.zip" -o "terraform.zip" \
       && unzip terraform.zip && mv terraform /usr/bin && rm terraform.zip \
