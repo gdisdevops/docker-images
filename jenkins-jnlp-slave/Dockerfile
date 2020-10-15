@@ -8,6 +8,7 @@ ARG TERRAFORM_11_VERSION=0.11.14
 ARG TERRAFORM_12_VERSION=0.12.29
 ARG TERRAFORM_13_VERSION=0.13.2
 ARG KUBECTL_VERSION=1.18.0
+ARG HELM_VERSION=3.1.2
 
 RUN apt-get update && apt-get dist-upgrade -y \
       && apt-get install -y \
@@ -29,7 +30,7 @@ RUN apt-get update && apt-get dist-upgrade -y \
 
     #### install boto3
     && pip3 install -U boto3 \
-    
+
     #### install vault
     && curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" -o "vault.zip" \
       && unzip vault.zip && mv vault /usr/bin && rm vault.zip \
@@ -38,20 +39,22 @@ RUN apt-get update && apt-get dist-upgrade -y \
     && curl "https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip" -o "packer.zip" \
       && unzip packer.zip && mv packer /usr/bin && rm packer.zip \
 
-    #### install terraform 11
-    && curl "https://releases.hashicorp.com/terraform/${TERRAFORM_11_VERSION}/terraform_${TERRAFORM_11_VERSION}_linux_amd64.zip" -o "terraform.zip" \
-      && unzip terraform.zip && mv terraform /usr/bin/tf11 && rm terraform.zip \
-      
-    #### install terraform 12
-    && curl "https://releases.hashicorp.com/terraform/${TERRAFORM_12_VERSION}/terraform_${TERRAFORM_12_VERSION}_linux_amd64.zip" -o "terraform.zip" \
-      && unzip terraform.zip && mv terraform /usr/bin/tf12 && rm terraform.zip \
-      
-    ##### install terraform 13
-    && curl "https://releases.hashicorp.com/terraform/${TERRAFORM_13_VERSION}/terraform_${TERRAFORM_13_VERSION}_linux_amd64.zip" -o "terraform.zip" \
-      && unzip terraform.zip && mv terraform /usr/bin && rm terraform.zip \
-
     #### install kubectl
     && curl "https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" -o "kubectl" \
-      && chmod +x kubectl && mv kubectl /usr/bin
+      && chmod +x kubectl && mv kubectl /usr/bin \
+
+    #### install helm
+    && curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" -o "helm.tar.gz" \
+      && tar -xvzf helm.tar.gz && chmod +x linux-amd64/helm && mv linux-amd64/helm /usr/bin \
+      && rm -rf linux-amd64 helm.tar.gz
 
 USER jenkins
+    #### install terraform with tfenv
+RUN git clone https://github.com/tfutils/tfenv.git /home/jenkins/.tfenv \
+      && export PATH="/home/jenkins/.tfenv/bin:${PATH}" \
+      && tfenv install ${TERRAFORM_11_VERSION} \
+      && tfenv install ${TERRAFORM_12_VERSION} \
+      && tfenv install ${TERRAFORM_13_VERSION} \
+      && tfenv use ${TERRAFORM_13_VERSION}
+
+ENV PATH "$PATH:/home/jenkins/.tfenv/bin"
