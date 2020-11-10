@@ -9,6 +9,7 @@ ARG TERRAFORM_12_VERSION=0.12.29
 ARG TERRAFORM_13_VERSION=0.13.2
 ARG KUBECTL_VERSION=1.18.0
 ARG HELM_VERSION=3.1.2
+ARG ANSIBLE_VERSION=2.10.3
 
 RUN apt-get update && apt-get dist-upgrade -y \
       && apt-get install -y \
@@ -21,7 +22,6 @@ RUN apt-get update && apt-get dist-upgrade -y \
         unzip \
         jq \
         python3-pip \
-        ansible \
       && rm -rf /var/lib/apt/lists/* \
 
     #### install aws cli
@@ -30,6 +30,9 @@ RUN apt-get update && apt-get dist-upgrade -y \
 
     #### install boto3
     && pip3 install -U boto3 \
+
+    #### install ansible
+    && pip3 install ansible==${ANSIBLE_VERSION} \
 
     #### install vault
     && curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" -o "vault.zip" \
