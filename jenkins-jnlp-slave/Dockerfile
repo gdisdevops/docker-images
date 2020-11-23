@@ -29,7 +29,7 @@ RUN apt-get update && apt-get dist-upgrade -y \
       && unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf aws \
 
     #### install boto3
-    && pip3 install -U boto3 \
+    && pip3 install -U boto3 checkov pre-commit \
 
     #### install ansible
     && pip3 install ansible==${ANSIBLE_VERSION} \
