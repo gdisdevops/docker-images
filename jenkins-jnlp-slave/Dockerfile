@@ -10,6 +10,7 @@ ARG TERRAFORM_13_VERSION=0.13.2
 ARG KUBECTL_VERSION=1.18.0
 ARG HELM_VERSION=3.1.2
 ARG ANSIBLE_VERSION=2.10.3
+ARG TERRAFORM_DOCS_VERSION=0.10.1
 
 RUN apt-get update && apt-get dist-upgrade -y \
       && apt-get install -y \
@@ -49,7 +50,12 @@ RUN apt-get update && apt-get dist-upgrade -y \
     #### install helm
     && curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" -o "helm.tar.gz" \
       && tar -xvzf helm.tar.gz && chmod +x linux-amd64/helm && mv linux-amd64/helm /usr/bin \
-      && rm -rf linux-amd64 helm.tar.gz
+      && rm -rf linux-amd64 helm.tar.gz \
+
+    #### install terraform-docs
+    && wget https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64 \
+    && mv terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64 /usr/local/bin/terraform-docs \
+    && chmod a+x /usr/local/bin/terraform-docs
 
 USER jenkins
     #### install terraform with tfenv
