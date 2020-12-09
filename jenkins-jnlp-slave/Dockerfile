@@ -7,6 +7,7 @@ ARG PACKER_VERSION=1.6.2
 ARG TERRAFORM_11_VERSION=0.11.14
 ARG TERRAFORM_12_VERSION=0.12.29
 ARG TERRAFORM_13_VERSION=0.13.2
+ARG TERRAFORM_14_VERSION=0.14.0
 ARG KUBECTL_VERSION=1.18.0
 ARG HELM_VERSION=3.1.2
 ARG ANSIBLE_VERSION=2.10.3
@@ -58,6 +59,7 @@ RUN git clone https://github.com/tfutils/tfenv.git /home/jenkins/.tfenv \
       && tfenv install ${TERRAFORM_11_VERSION} \
       && tfenv install ${TERRAFORM_12_VERSION} \
       && tfenv install ${TERRAFORM_13_VERSION} \
+      && tfenv install ${TERRAFORM_14_VERSION} \
       && tfenv use ${TERRAFORM_13_VERSION}
 
 ENV PATH "$PATH:/home/jenkins/.tfenv/bin"
