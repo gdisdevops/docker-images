@@ -4,9 +4,9 @@ USER root
 
 ARG VAULT_VERSION=1.5.3
 ARG PACKER_VERSION=1.6.2
-ARG TERRAFORM_11_VERSION=0.11.14
 ARG TERRAFORM_12_VERSION=0.12.29
-ARG TERRAFORM_13_VERSION=0.13.2
+ARG TERRAFORM_13_VERSION=0.13.5
+ARG TERRAFORM_14_VERSION=0.14.5
 ARG KUBECTL_VERSION=1.18.0
 ARG HELM_VERSION=3.5.1
 ARG ANSIBLE_VERSION=2.10.3
@@ -57,13 +57,15 @@ RUN apt-get update && apt-get dist-upgrade -y \
     && mv terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64 /usr/local/bin/terraform-docs \
     && chmod a+x /usr/local/bin/terraform-docs
 
+RUN mkdir -p /etc/tfenv \
+  && git clone https://github.com/tfutils/tfenv.git /etc/tfenv \
+  && chown -R jenkins /etc/tfenv
+
 USER jenkins
     #### install terraform with tfenv
-RUN git clone https://github.com/tfutils/tfenv.git /home/jenkins/.tfenv \
-      && export PATH="/home/jenkins/.tfenv/bin:${PATH}" \
-      && tfenv install ${TERRAFORM_11_VERSION} \
-      && tfenv install ${TERRAFORM_12_VERSION} \
+ENV PATH "$PATH:/etc/tfenv/bin"
+RUN tfenv install ${TERRAFORM_12_VERSION} \
       && tfenv install ${TERRAFORM_13_VERSION} \
-      && tfenv use ${TERRAFORM_13_VERSION}
+      && tfenv install ${TERRAFORM_14_VERSION} \
+      && tfenv use ${TERRAFORM_15_VERSION}
 
-ENV PATH "$PATH:/home/jenkins/.tfenv/bin"
