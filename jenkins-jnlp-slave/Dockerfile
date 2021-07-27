@@ -31,10 +31,10 @@ RUN apt-get update && apt-get dist-upgrade -y \
       && unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf aws \
 
     #### install boto3
-    && pip3 install -U boto3 checkov pre-commit \
+    && pip3 install --no-cache-dir -U boto3 checkov pre-commit \
 
     #### install ansible
-    && pip3 install ansible==${ANSIBLE_VERSION} \
+    && pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION} \
 
     #### install vault
     && curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" -o "vault.zip" \
@@ -59,7 +59,7 @@ RUN apt-get update && apt-get dist-upgrade -y \
     && chmod a+x /usr/local/bin/terraform-docs
 
 RUN mkdir -p /etc/tfenv \
-  && git clone https://github.com/tfutils/tfenv.git /etc/tfenv \
+  && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
   && chown -R jenkins /etc/tfenv
 
 USER jenkins
