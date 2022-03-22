@@ -4,11 +4,8 @@ USER root
 
 ARG VAULT_VERSION=1.5.3
 ARG PACKER_VERSION=1.6.2
-ARG TERRAFORM_012_VERSION=0.12.29
-ARG TERRAFORM_013_VERSION=0.13.5
-ARG TERRAFORM_014_VERSION=0.14.5
-ARG TERRAFORM_015_VERSION=0.15.4
 ARG TERRAFORM_1_VERSION=1.0.5
+ARG TERRAFORM_1_1_VERSION=1.1.6
 ARG KUBECTL_VERSION=1.21.9
 ARG HELM_VERSION=3.8.1
 ARG ANSIBLE_VERSION=2.10.3
@@ -67,10 +64,7 @@ RUN mkdir -p /etc/tfenv \
 USER jenkins
     #### install terraform with tfenv
 ENV PATH "$PATH:/etc/tfenv/bin"
-RUN tfenv install ${TERRAFORM_012_VERSION} \
-      && tfenv install ${TERRAFORM_013_VERSION} \
-      && tfenv install ${TERRAFORM_014_VERSION} \
-      && tfenv install ${TERRAFORM_015_VERSION} \
-      && tfenv install ${TERRAFORM_1_VERSION} \
+RUN tfenv install ${TERRAFORM_1_VERSION} \
+      && tfenv install ${TERRAFORM_1_1_VERSION} \
       && tfenv use ${TERRAFORM_1_VERSION}
 
