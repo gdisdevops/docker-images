@@ -73,4 +73,3 @@ RUN tfenv install ${TERRAFORM_012_VERSION} \
       && tfenv install ${TERRAFORM_1_VERSION} \
       && tfenv use ${TERRAFORM_1_VERSION}
 
-

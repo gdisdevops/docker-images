@@ -22,7 +22,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_PATH: jenkins-jnlp-slave
   # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}/${{ env.IMAGE_PATH }}
+  IMAGE_NAME: ${{ github.repository }}/jenkins-jnlp-slave
 
 
 jobs:
