@@ -23,6 +23,7 @@ RUN apt-get update && apt-get dist-upgrade -y \
         openssh-server openssh-client \
         software-properties-common \
         unzip \
+        libffi-dev \
         jq \
         python3-pip \
       && rm -rf /var/lib/apt/lists/* \
