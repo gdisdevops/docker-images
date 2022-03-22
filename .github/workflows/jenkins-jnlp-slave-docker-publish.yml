@@ -7,7 +7,7 @@ name: Docker
 
 on:
   push:
-    branches: [ master, github-actions ]
+    branches: [ master ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
     paths: 
@@ -71,9 +71,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=match,pattern=master,value=latest
-            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
             type=ref,event=tag
+            type=ref,event=branch
             type=ref,event=pr
 
       # Build and push Docker image with Buildx (don't push on PR)
