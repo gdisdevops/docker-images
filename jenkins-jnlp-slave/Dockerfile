@@ -56,7 +56,7 @@ RUN apt-get update && apt-get dist-upgrade -y \
     #### install terraform-docs
     && wget https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64 \
     && mv terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64 /usr/local/bin/terraform-docs \
-    && chmod a+x /usr/local/bin/terraform-docs
+    && chmod a+x /usr/local/bin/terraform-docs \
 
     #### install conftest (aka opa)
     && wget "https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" \
