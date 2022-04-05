@@ -12,21 +12,26 @@ on:
     tags: [ 'v*.*.*' ]
     paths: 
     - 'jenkins-jnlp-slave/**'
+    - 'jenkins-inbound-agent/**'
   pull_request:
     branches: [ master ]
     paths: 
     - 'jenkins-jnlp-slave/**'
+    - 'jenkins-inbound-agent/**'
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  IMAGE_PATH: jenkins-jnlp-slave
+  # IMAGE_PATH: jenkins-jnlp-slave
   # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}/jenkins-jnlp-slave
+  # IMAGE_NAME: ${{ github.repository }}/jenkins-jnlp-slave
 
 
 jobs:
   build:
+    strategy:
+      matrix:
+        image: [jenkins-jnlp-slave, jenkins-inbound-agent]
 
     runs-on: ubuntu-latest
     permissions:
@@ -69,7 +74,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
             type=ref,event=tag
@@ -82,7 +87,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
-          context: ${{ env.IMAGE_PATH }}
+          context: ${{ matrix.image }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -98,4 +103,4 @@ jobs:
           COSIGN_EXPERIMENTAL: "true"
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
-        run: cosign sign ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}
+        run: cosign sign ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}@${{ steps.build-and-push.outputs.digest }}
