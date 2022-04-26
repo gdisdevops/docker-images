@@ -23,6 +23,7 @@ RUN apt-get update && apt-get dist-upgrade -y \
         unzip \
         libffi-dev \
         jq \
+        yq \
         python3-pip \
       && rm -rf /var/lib/apt/lists/* \
 
