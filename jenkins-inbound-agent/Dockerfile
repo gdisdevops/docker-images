@@ -11,6 +11,7 @@ ARG HELM_VERSION=3.8.1
 ARG ANSIBLE_VERSION=2.10.3
 ARG TERRAFORM_DOCS_VERSION=0.10.1
 ARG CONFTEST_VERSION=0.23.0
+ARG TRIVY_VERSION=0.27.1
 
 RUN apt-get update && apt-get dist-upgrade -y \
       && apt-get install -y \
@@ -55,17 +56,22 @@ RUN apt-get update && apt-get dist-upgrade -y \
 
     #### install terraform-docs
     && curl -L "https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64" -o "terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64" \
-    && mv terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64 /usr/local/bin/terraform-docs \
-    && chmod a+x /usr/local/bin/terraform-docs \
+      && mv terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64 /usr/local/bin/terraform-docs \
+      && chmod a+x /usr/local/bin/terraform-docs \
 
     #### install conftest (aka opa)
     && curl -L "https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" -o "conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" \
-    && tar xzf "conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" \
-    && mv conftest /usr/local/bin \
-    && chmod +x /usr/local/bin/conftest \
-    && rm "conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz"
+      && tar xzf "conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" \
+      && mv conftest /usr/local/bin \
+      && chmod +x /usr/local/bin/conftest \
+      && rm "conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" \
 
-
+    #### install trivy
+    && wget "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
+      && dpkg -i "trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
+      && rm "trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
+      && pip3 install --no-cache-dir pyyaml nested-lookup
+ 
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
   && chown -R jenkins /etc/tfenv
