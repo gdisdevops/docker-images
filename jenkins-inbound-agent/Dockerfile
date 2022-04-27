@@ -18,6 +18,7 @@ RUN apt-get update && apt-get dist-upgrade -y \
         git \
         apt-transport-https \
         curl \
+        wget \
         init \
         openssh-server openssh-client \
         software-properties-common \
