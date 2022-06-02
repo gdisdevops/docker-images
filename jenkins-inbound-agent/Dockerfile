@@ -86,9 +86,6 @@ RUN apt-get update && apt-get dist-upgrade -y \
       && mv "sonar-scanner-${SONAR_SCANNER_VERSION}" "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}" \
       && ln -s "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner" /usr/local/bin/sonar-scanner \
 
-    #### install helm diff
-    && helm plugin install https://github.com/databus23/helm-diff \
-
     #### install infracost
     && wget "https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz" \
       && wget "https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz.sha256" \
@@ -114,7 +111,10 @@ RUN mkdir -p /etc/tfenv \
   && chown -R jenkins /etc/tfenv
 
 USER jenkins
-    #### install terraform with tfenv
+    #### install terraform with tfenv and helm diff
+
+RUN helm plugin install https://github.com/databus23/helm-diff
+
 ENV PATH "$PATH:/etc/tfenv/bin"
 RUN tfenv install ${TERRAFORM_1_VERSION} \
       && tfenv install ${TERRAFORM_1_1_VERSION} \
