@@ -12,6 +12,9 @@ ARG ANSIBLE_VERSION=2.10.3
 ARG TERRAFORM_DOCS_VERSION=0.10.1
 ARG CONFTEST_VERSION=0.23.0
 ARG TRIVY_VERSION=0.27.1
+ARG SONAR_SCANNER_VERSION=4.7.0.2747
+ARG INFRACOST_VERSION=v0.9.24
+ARG SONOBUOY_VERSION=0.56.6
 
 RUN apt-get update && apt-get dist-upgrade -y \
       && apt-get install -y \
@@ -71,8 +74,41 @@ RUN apt-get update && apt-get dist-upgrade -y \
     && wget "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
       && dpkg -i "trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
       && rm "trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
-      && pip3 install --no-cache-dir pyyaml nested-lookup
+      && pip3 install --no-cache-dir pyyaml nested-lookup \
  
+    #### install sonar scanner cli
+    && wget "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" \
+      && wget "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256" \
+      && echo $(cat "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256")  "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" | sha256sum -c \
+      && unzip "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" \
+      && rm "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256" \
+      && chmod +x "sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner" \
+      && mv "sonar-scanner-${SONAR_SCANNER_VERSION}" "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}" \
+      && ln -s "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner" /usr/local/bin/sonar-scanner \
+
+    #### install helm diff
+    && helm plugin install https://github.com/databus23/helm-diff \
+
+    #### install infracost
+    && wget "https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz" \
+      && wget "https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz.sha256" \
+      && sha256sum -c "infracost-linux-amd64.tar.gz.sha256" \
+      && mkdir /opt/infracost_bin \
+      && tar xf infracost-linux-amd64.tar.gz -C /opt/infracost_bin/ \
+      && rm infracost-linux-amd64.tar.gz infracost-linux-amd64.tar.gz.sha256 \
+      && chmod +x /opt/infracost_bin/infracost-linux-amd64 \
+      && mv /opt/infracost_bin/infracost-linux-amd64 /opt/infracost_bin/infracost \
+      && ln -s /opt/infracost_bin/infracost /usr/local/bin/infracost \
+
+    #### install sonobuoy
+    && wget "https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}/sonobuoy_${SONOBUOY_VERSION}_linux_amd64.tar.gz" \
+      && wget "https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}/sonobuoy_${SONOBUOY_VERSION}_checksums.txt" \
+      && sha256sum --ignore-missing -c "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" \
+      && tar -xvzf "sonobuoy_${SONOBUOY_VERSION}_linux_amd64.tar.gz" \
+      && mv ./sonobuoy /usr/local/bin/sonobuoy \
+      && chmod +x /usr/local/bin/sonobuoy \
+      && rm "sonobuoy_${SONOBUOY_VERSION}_linux_amd64.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE
+
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
   && chown -R jenkins /etc/tfenv
