@@ -16,8 +16,10 @@ ARG SONAR_SCANNER_VERSION=4.7.0.2747
 ARG INFRACOST_VERSION=v0.9.24
 ARG SONOBUOY_VERSION=0.56.6
 
-RUN apt-get update && apt-get dist-upgrade -y \
-      && apt-get install -y \
+RUN set -eux; \
+    apt-get update; \
+    apt-get dist-upgrade -y; \
+    apt-get install -y \
         git \
         apt-transport-https \
         curl \
@@ -27,90 +29,126 @@ RUN apt-get update && apt-get dist-upgrade -y \
         unzip \
         libffi-dev \
         jq \
-        python3-pip \
-      && rm -rf /var/lib/apt/lists/* \
+        python3-pip; \
+    rm -rf /var/lib/apt/lists/* 
+
+RUN RUN set -eux; \
+    ARCH="$(dpkg --print-architecture)"; \
+    case "${ARCH}" in \
+       aarch64|arm64) \
+          VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_arm64.zip"; \
+          PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_arm64.zip"; \
+          KUBECTL_DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/arm64/kubectl"; \
+          HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-arm64.tar.gz"; \
+          HELM_FOLDER="linux-arm64"; \
+          TERRAFORM_DOCS_DOWNLOAD_FILE="terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-arm64"; \
+          TERRAFORM_DOCS_DOWNLOAD_URL="https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-arm64"; \
+          CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_linux_arm64.deb"; \
+          TRIVY_DOWNLOAD_URL="https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-ARM64.deb"; \
+          INFRACOST_DOWNLOAD_FILE="infracost-linux-arm64"; \
+          INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
+          SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_arm64"; \
+          SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
+         ;; \
+       amd64|x86_64) \
+          VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip"; \
+          PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"; \
+          KUBECTL_DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"; \
+          HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"; \
+          HELM_FOLDER="linux-amd64"; \
+          TERRAFORM_DOCS_DOWNLOAD_FILE="terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64"; \
+          TERRAFORM_DOCS_DOWNLOAD_URL="https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64"; \
+          CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz"; \
+          TRIVY_DOWNLOAD_URL="https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb"; \
+          INFRACOST_DOWNLOAD_FILE="infracost-linux-amd64"; \
+          INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz"; \
+          SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_amd64"; \
+          SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
+         ;; \
+       *) \
+         echo "Unsupported arch: ${ARCH}"; \
+         exit 1; \
+         ;; \
+    esac; \
 
     #### install aws cli
-    && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-      && unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf aws \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
+      unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf aws; \
 
     #### install boto3
-    && pip3 install --no-cache-dir -U boto3 checkov pre-commit \
+    pip3 install --no-cache-dir -U boto3 checkov pre-commit; \
 
     #### install ansible
-    && pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION} \
+    pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION}; \
 
     #### install vault
-    && curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" -o "vault.zip" \
-      && unzip vault.zip && mv vault /usr/bin && rm vault.zip \
+    curl -L "${VAULT_DOWNLOAD_URL}" -o "vault.zip"; \
+      unzip vault.zip && mv vault /usr/bin && rm vault.zip; \
 
     #### install packer
-    && curl "https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip" -o "packer.zip" \
-      && unzip packer.zip && mv packer /usr/bin && rm packer.zip \
+    curl -L "${PACKER_DOWNLOAD_URL}" -o "packer.zip"; \
+      unzip packer.zip && mv packer /usr/bin && rm packer.zip; \
 
     #### install kubectl
-    && curl "https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" -o "kubectl" \
-      && chmod +x kubectl && mv kubectl /usr/bin \
+    curl -L "${KUBECTL_DOWNLOAD_URL}" -o "kubectl"; \
+      chmod +x kubectl && mv kubectl /usr/bin; \
 
     #### install helm
-    && curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" -o "helm.tar.gz" \
-      && tar -xvzf helm.tar.gz && chmod +x linux-amd64/helm && mv linux-amd64/helm /usr/bin \
-      && rm -rf linux-amd64 helm.tar.gz \
+    curl -L "${HELM_DOWNLOAD_URL}" -o "helm.tar.gz"; \
+      tar -xvzf helm.tar.gz && chmod +x "${HELM_FOLDER}/helm" && mv "${HELM_FOLDER}/helm" /usr/bin; \
+      rm -rf "${HELM_FOLDER}" helm.tar.gz; \
 
     #### install terraform-docs
-    && wget https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64 \
-      && mv terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64 /usr/local/bin/terraform-docs \
-      && chmod a+x /usr/local/bin/terraform-docs \
+    curl -L "${TERRAFORM_DOCS_DOWNLOAD_URL}" -o "terraform-docs"; \
+      mv terraform-docs /usr/local/bin/terraform-docs; \
+      chmod a+x /usr/local/bin/terraform-docs; \
 
     #### install conftest (aka opa)
-    && wget "https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" \
-      && tar xzf "conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" \
-      && mv conftest /usr/local/bin \
-      && chmod +x /usr/local/bin/conftest \
-      && rm "conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz" \
-    
+    curl -L "${CONFTEST_DOWNLOAD_URL}" -o "conftest_${CONFTEST_VERSION}.tar.gz"; \
+      tar xzf "conftest_${CONFTEST_VERSION}.tar.gz"; \
+      mv conftest /usr/local/bin; \
+      chmod +x /usr/local/bin/conftest; \
+      rm "conftest_${CONFTEST_VERSION}.tar.gz"; \
+
     #### install trivy
-    && wget "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
-      && dpkg -i "trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
-      && rm "trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
-      && pip3 install --no-cache-dir pyyaml nested-lookup \
+    curl -L "${TRIVY_DOWNLOAD_URL}" -o trivy.deb; \
+      dpkg -i trivy.deb; \
+      rm trivy.deb; \
+      pip3 install --no-cache-dir pyyaml nested-lookup; \
  
     #### install sonar scanner cli
-    && wget "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" \
-      && wget "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256" \
-      && echo $(cat "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256")  "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" | sha256sum -c \
-      && unzip "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" \
-      && rm "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256" \
-      && chmod +x "sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner" \
-      && mv "sonar-scanner-${SONAR_SCANNER_VERSION}" "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}" \
-      && ln -s "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner" /usr/local/bin/sonar-scanner \
+    curl -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" -o "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip"; \
+      curl -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256" -o "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256"; \
+      echo $(cat "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256")  "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" | sha256sum -c; \
+      unzip "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip"; \
+      rm "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256"; \
+      chmod +x "sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner"; \
+      mv "sonar-scanner-${SONAR_SCANNER_VERSION}" "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}"; \
+      ln -s "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner" /usr/local/bin/sonar-scanner; \
 
     #### install infracost
-    && wget "https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz" \
-      && wget "https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz.sha256" \
-      && sha256sum -c "infracost-linux-amd64.tar.gz.sha256" \
-      && mkdir /opt/infracost_bin \
-      && tar xf infracost-linux-amd64.tar.gz -C /opt/infracost_bin/ \
-      && rm infracost-linux-amd64.tar.gz infracost-linux-amd64.tar.gz.sha256 \
-      && chmod +x /opt/infracost_bin/infracost-linux-amd64 \
-      && mv /opt/infracost_bin/infracost-linux-amd64 /opt/infracost_bin/infracost \
-      && ln -s /opt/infracost_bin/infracost /usr/local/bin/infracost \
+    curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz"; \
+      curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
+      sha256sum -c "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
+      mkdir /opt/infracost_bin; \
+      tar xf "${INFRACOST_DOWNLOAD_FILE}.tar.gz" -C /opt/infracost_bin/; \
+      rm "${INFRACOST_DOWNLOAD_FILE}.tar.gz" "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
+      chmod +x "/opt/infracost_bin/infracost-linux-$(dpkg --print-architecture)"; \
+      mv "/opt/infracost_bin/infracost-linux-$(dpkg --print-architecture)" /opt/infracost_bin/infracost; \
+      ln -s /opt/infracost_bin/infracost /usr/local/bin/infracost; \
 
     #### install sonobuoy
-    && wget "https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}/sonobuoy_${SONOBUOY_VERSION}_linux_amd64.tar.gz" \
-      && wget "https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}/sonobuoy_${SONOBUOY_VERSION}_checksums.txt" \
-      && sha256sum --ignore-missing -c "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" \
-      && tar -xvzf "sonobuoy_${SONOBUOY_VERSION}_linux_amd64.tar.gz" \
-      && mv ./sonobuoy /usr/local/bin/sonobuoy \
-      && chmod +x /usr/local/bin/sonobuoy \
-      && rm "sonobuoy_${SONOBUOY_VERSION}_linux_amd64.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE
-
-
+    curl -L "${SONOBUOY_DOWNLOAD_URL}/${SONOBUOY_DOWNLOAD_FILE}.tar.gz" -o "${SONOBUOY_DOWNLOAD_FILE}.tar.gz"; \
+      curl -L "${SONOBUOY_DOWNLOAD_URL}/sonobuoy_${SONOBUOY_VERSION}_checksums.txt" -o "sonobuoy_${SONOBUOY_VERSION}_checksums.txt"; \
+      sha256sum --ignore-missing -c "sonobuoy_${SONOBUOY_VERSION}_checksums.txt"; \
+      tar -xvzf "${SONOBUOY_DOWNLOAD_FILE}.tar.gz"; \
+      mv ./sonobuoy /usr/local/bin/sonobuoy; \
+      chmod +x /usr/local/bin/sonobuoy; \
+      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE;
 
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
   && chown -R jenkins /etc/tfenv
-
 
 USER jenkins
     #### install terraform with tfenv and helm diff
