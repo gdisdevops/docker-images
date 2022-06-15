@@ -63,7 +63,7 @@ RUN RUN set -eux; \
           CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz"; \
           TRIVY_DOWNLOAD_URL="https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb"; \
           INFRACOST_DOWNLOAD_FILE="infracost-linux-amd64"; \
-          INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}/infracost-linux-amd64.tar.gz"; \
+          INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_amd64"; \
           SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
          ;; \
