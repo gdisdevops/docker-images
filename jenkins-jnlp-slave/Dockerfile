@@ -15,6 +15,7 @@ ARG TRIVY_VERSION=0.27.1
 ARG SONAR_SCANNER_VERSION=4.7.0.2747
 ARG INFRACOST_VERSION=v0.9.24
 ARG SONOBUOY_VERSION=0.56.6
+ARG COSIGN_VERSION=1.9.0
 
 RUN set -eux; \
     apt-get update; \
@@ -32,7 +33,7 @@ RUN set -eux; \
         python3-pip; \
     rm -rf /var/lib/apt/lists/* 
 
-RUN RUN set -eux; \
+RUN set -eux; \
     ARCH="$(dpkg --print-architecture)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
@@ -44,12 +45,13 @@ RUN RUN set -eux; \
           HELM_FOLDER="linux-arm64"; \
           TERRAFORM_DOCS_DOWNLOAD_FILE="terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-arm64"; \
           TERRAFORM_DOCS_DOWNLOAD_URL="https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-arm64"; \
-          CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_linux_arm64.deb"; \
+          CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_arm64.tar.gz"; \
           TRIVY_DOWNLOAD_URL="https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-ARM64.deb"; \
           INFRACOST_DOWNLOAD_FILE="infracost-linux-arm64"; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_arm64"; \
           SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
+          COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb" \
          ;; \
        amd64|x86_64) \
           AWS_CLI_DOWNLOAD_URL="https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
@@ -66,6 +68,7 @@ RUN RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_amd64"; \
           SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
+          COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
@@ -146,7 +149,12 @@ RUN RUN set -eux; \
       tar -xvzf "${SONOBUOY_DOWNLOAD_FILE}.tar.gz"; \
       mv ./sonobuoy /usr/local/bin/sonobuoy; \
       chmod +x /usr/local/bin/sonobuoy; \
-      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE;
+      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE; \
+
+    #### install cosign
+    curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
+      dpkg -i cosign.deb; \
+      rm cosign.deb;
 
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
