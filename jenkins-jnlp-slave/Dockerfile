@@ -52,6 +52,7 @@ RUN set -eux; \
           SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_arm64"; \
           SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb" \
+          COSIGN_BINARY="../cosign_linux_arm64" \
          ;; \
        amd64|x86_64) \
           AWS_CLI_DOWNLOAD_URL="https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
@@ -69,6 +70,7 @@ RUN set -eux; \
           SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_amd64"; \
           SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
+          COSIGN_BINARY="../cosign_linux_amd64" \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
@@ -156,11 +158,12 @@ RUN set -eux; \
     #  dpkg -i cosign.deb; \
     #  rm cosign.deb;
 
-COPY --chown=root:root "../blob/cosign_linux_$(dpkg --print-architecture)" /usr/local/bin/
+COPY --chown=root:root ${COSIGN_BINARY} /usr/local/bin/
 
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
-  && chown -R jenkins /etc/tfenv
+  && chown -R jenkins /etc/tfenv \
+  && mv /usr/local/bin/cosign_linux_* /usr/local/bin/cosign
 
 USER jenkins
     #### install terraform with tfenv and helm diff

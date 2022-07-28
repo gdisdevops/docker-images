@@ -163,7 +163,8 @@ COPY --chown=root:root ${COSIGN_BINARY} /usr/local/bin/
 
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
-  && chown -R jenkins /etc/tfenv
+  && chown -R jenkins /etc/tfenv \
+  && mv /usr/local/bin/cosign_linux_* /usr/local/bin/cosign
 
 USER jenkins
     #### install terraform with tfenv and helm diff
