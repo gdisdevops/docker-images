@@ -149,12 +149,14 @@ RUN set -eux; \
       tar -xvzf "${SONOBUOY_DOWNLOAD_FILE}.tar.gz"; \
       mv ./sonobuoy /usr/local/bin/sonobuoy; \
       chmod +x /usr/local/bin/sonobuoy; \
-      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE; \
+      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE;
 
     #### install cosign
-    curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
-      dpkg -i cosign.deb; \
-      rm cosign.deb;
+    #curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
+    #  dpkg -i cosign.deb; \
+    #  rm cosign.deb;
+
+COPY --chown=root:root "../blob/cosign_linux_$(dpkg --print-architecture)" /usr/local/bin/
 
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
