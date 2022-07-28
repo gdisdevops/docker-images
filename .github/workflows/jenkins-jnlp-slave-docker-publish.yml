@@ -33,6 +33,8 @@ jobs:
       matrix:
         include:
           - {image: "jenkins-jnlp-slave", os: "linux", arch: "amd64"}
+          - {image: "jenkins-jnlp-slave", os: "linux", arch: "arm64"}
+          - {image: "jenkins-inbound-agent", os: "linux", arch: "amd64"}
           - {image: "jenkins-inbound-agent", os: "linux", arch: "arm64"}
 
     runs-on: ubuntu-latest
