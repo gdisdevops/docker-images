@@ -31,11 +31,7 @@ jobs:
   build:
     strategy:
       matrix:
-        include:
-          - {image: "jenkins-jnlp-slave", os: "linux", arch: "amd64"}
-          - {image: "jenkins-jnlp-slave", os: "linux", arch: "arm64"}
-          - {image: "jenkins-inbound-agent", os: "linux", arch: "amd64"}
-          - {image: "jenkins-inbound-agent", os: "linux", arch: "arm64"}
+        image: [jenkins-jnlp-slave, jenkins-inbound-agent]
 
     runs-on: ubuntu-latest
     permissions:
@@ -86,7 +82,6 @@ jobs:
             type=ref,event=tag
             type=ref,event=branch
             type=ref,event=pr
-
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
@@ -94,8 +89,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           file: ${{ matrix.image }}/Dockerfile
-          platforms: ${{ matrix.os }}/${{ matrix.arch }}
-          build-args: COSIGN_BINARY=../blob/cosign_${{ matrix.os }}_${{ matrix.arch }}
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

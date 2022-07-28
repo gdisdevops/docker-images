@@ -16,7 +16,6 @@ ARG SONAR_SCANNER_VERSION=4.7.0.2747
 ARG INFRACOST_VERSION=v0.9.24
 ARG SONOBUOY_VERSION=0.56.6
 ARG COSIGN_VERSION=1.9.0
-ARG COSIGN_BINARY
 
 RUN set -eux; \
     apt-get update; \
@@ -158,12 +157,12 @@ RUN set -eux; \
     #  rm cosign.deb;
 
 
-COPY --chown=root:root ${COSIGN_BINARY} /usr/local/bin/
+COPY --chown=root:root ../blob/* /usr/local/bin/
 
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
   && chown -R jenkins /etc/tfenv \
-  && mv /usr/local/bin/cosign_linux_* /usr/local/bin/cosign
+  && mv "/usr/local/bin/cosign_linux_$(dpkg --print-architecture)" /usr/local/bin/cosign
 
 USER jenkins
     #### install terraform with tfenv and helm diff
