@@ -16,6 +16,7 @@ ARG SONAR_SCANNER_VERSION=4.7.0.2747
 ARG INFRACOST_VERSION=v0.9.24
 ARG SONOBUOY_VERSION=0.56.6
 ARG COSIGN_VERSION=1.9.0
+ARG COSIGN_BINARY
 
 RUN set -eux; \
     apt-get update; \
@@ -149,16 +150,20 @@ RUN set -eux; \
       tar -xvzf "${SONOBUOY_DOWNLOAD_FILE}.tar.gz"; \
       mv ./sonobuoy /usr/local/bin/sonobuoy; \
       chmod +x /usr/local/bin/sonobuoy; \
-      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE; \
+      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE;
 
     #### install cosign
-    curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
-      dpkg -i cosign.deb; \
-      rm cosign.deb;
+    #curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
+    #  dpkg -i cosign.deb; \
+    #  rm cosign.deb;
+
+
+COPY --chown=root:root ${COSIGN_BINARY} /usr/local/bin/
 
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
-  && chown -R jenkins /etc/tfenv
+  && chown -R jenkins /etc/tfenv \
+  && mv /usr/local/bin/cosign_linux_* /usr/local/bin/cosign
 
 USER jenkins
     #### install terraform with tfenv and helm diff
