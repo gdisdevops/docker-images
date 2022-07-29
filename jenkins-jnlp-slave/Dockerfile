@@ -1,4 +1,4 @@
-FROM jenkins/jnlp-slave:4.3-9
+FROM jenkins/jnlp-slave:4.13.2-1
 
 USER root
 
@@ -16,6 +16,7 @@ ARG SONAR_SCANNER_VERSION=4.7.0.2747
 ARG INFRACOST_VERSION=v0.9.24
 ARG SONOBUOY_VERSION=0.56.6
 ARG COSIGN_VERSION=1.9.0
+ARG SENTRY_CLI_VERSION=2.5.0
 
 RUN set -eux; \
     apt-get update; \
@@ -51,7 +52,9 @@ RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_arm64"; \
           SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
-          COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb" \
+          COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb"; \
+          SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
+          SENTRY_HASHSUM="4d4bfdefc86738feec7e59ff5b0e7c824c37fa8c150e8926a020b0a1e4f84120"; \
          ;; \
        amd64|x86_64) \
           AWS_CLI_DOWNLOAD_URL="https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
@@ -69,6 +72,8 @@ RUN set -eux; \
           SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_amd64"; \
           SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
+          SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
+          SENTRY_HASHSUM="f35d3cee001eb20b0706da9ddd939890371b0fd7b430a7ef3d3dfae8718b75a3"; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
@@ -149,7 +154,13 @@ RUN set -eux; \
       tar -xvzf "${SONOBUOY_DOWNLOAD_FILE}.tar.gz"; \
       mv ./sonobuoy /usr/local/bin/sonobuoy; \
       chmod +x /usr/local/bin/sonobuoy; \
-      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE;
+      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE; \
+
+    #### install sentry-cli
+    curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
+      echo "${SENTRY_HASHSUM}  sentry-cli" | sha256sum -c; \
+      mv sentry-cli /usr/local/bin/sentry-cli; \
+      chmod +x /usr/local/bin/sentry-cli
 
     #### install cosign
     #curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
