@@ -15,7 +15,7 @@ ARG TRIVY_VERSION=0.27.1
 ARG SONAR_SCANNER_VERSION=4.7.0.2747
 ARG INFRACOST_VERSION=v0.9.24
 ARG SONOBUOY_VERSION=0.56.6
-ARG COSIGN_VERSION=1.9.0
+ARG COSIGN_VERSION=1.10.1
 ARG SENTRY_CLI_VERSION=2.5.0
 
 RUN set -eux; \
@@ -160,19 +160,16 @@ RUN set -eux; \
     curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
       echo "${SENTRY_HASHSUM}  sentry-cli" | sha256sum -c; \
       mv sentry-cli /usr/local/bin/sentry-cli; \
-      chmod +x /usr/local/bin/sentry-cli
+      chmod +x /usr/local/bin/sentry-cli; \
 
     #### install cosign
-    #curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
-    #  dpkg -i cosign.deb; \
-    #  rm cosign.deb;
-
-COPY --chown=root:root ../blob/* /usr/local/bin/
+    curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
+      dpkg -i cosign.deb; \
+      rm cosign.deb;
 
 RUN mkdir -p /etc/tfenv \
   && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
-  && chown -R jenkins /etc/tfenv \
-  && mv "/usr/local/bin/cosign_linux_$(dpkg --print-architecture)" /usr/local/bin/cosign
+  && chown -R jenkins /etc/tfenv 
 
 USER jenkins
     #### install terraform with tfenv and helm diff
