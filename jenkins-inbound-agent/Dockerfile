@@ -17,6 +17,7 @@ ARG INFRACOST_VERSION=v0.9.24
 ARG SONOBUOY_VERSION=0.56.6
 ARG COSIGN_VERSION=1.10.1
 ARG SENTRY_CLI_VERSION=2.5.0
+ARG CHECKOV_VERSION=2.1.282
 
 RUN set -eux; \
     apt-get update; \
@@ -85,8 +86,8 @@ RUN set -eux; \
     curl "${AWS_CLI_DOWNLOAD_URL}" -o "awscliv2.zip"; \
       unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf aws; \
 
-    #### install boto3
-    pip3 install --no-cache-dir -U boto3 checkov pre-commit; \
+    #### install boto3, checov and pre-commit
+    pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} pre-commit; \
 
     #### install ansible
     pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION}; \
