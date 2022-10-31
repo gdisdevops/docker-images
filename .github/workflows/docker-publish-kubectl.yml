@@ -1,4 +1,4 @@
-name: Docker
+name: Docker - kubectl
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -9,16 +9,14 @@ on:
   push:
     branches: [ master ]
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: [ 'kubectl-v*.*.*' ]
     paths: 
-    - 'jenkins-jnlp-slave/**'
-    - 'jenkins-inbound-agent/**'
+    - 'kubectl/**'
     - '.github/workflows/**'
   pull_request:
     branches: [ master ]
     paths: 
-    - 'jenkins-jnlp-slave/**'
-    - 'jenkins-inbound-agent/**'
+    - 'kubectl/**'
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -32,7 +30,7 @@ jobs:
   build:
     strategy:
       matrix:
-        image: [jenkins-jnlp-slave, jenkins-inbound-agent]
+        image: [kubectl]
 
     runs-on: ubuntu-latest
     permissions:
@@ -80,7 +78,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-            type=ref,event=tag
+            type=match,pattern=kubectl-(v.*),group=1
             type=ref,event=branch
             type=ref,event=pr
       # Build and push Docker image with Buildx (don't push on PR)
