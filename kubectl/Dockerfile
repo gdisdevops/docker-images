@@ -11,5 +11,5 @@ RUN wget "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
   rm kubectl
 
 USER nobody
-
-ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["/bin/sh"]
+ENTRYPOINT []
