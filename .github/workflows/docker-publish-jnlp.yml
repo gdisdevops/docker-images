@@ -11,13 +11,11 @@ on:
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
     paths: 
-    - 'jenkins-jnlp-slave/**'
     - 'jenkins-inbound-agent/**'
     - '.github/workflows/**'
   pull_request:
     branches: [ master ]
     paths: 
-    - 'jenkins-jnlp-slave/**'
     - 'jenkins-inbound-agent/**'
 
 env:
@@ -32,7 +30,7 @@ jobs:
   build:
     strategy:
       matrix:
-        image: [jenkins-jnlp-slave, jenkins-inbound-agent]
+        image: [jenkins-inbound-agent]
 
     runs-on: ubuntu-latest
     permissions:
