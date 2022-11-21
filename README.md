@@ -24,7 +24,7 @@ CHECKOV_VERSION=2.1.282
 
 ## Jenkins JNLP Slave
 
-:warning: DEPRECATED :warning:
+:warning: DEPRECATED - no longer built :warning:
 
 INBOUND_AGENT_VERSION=4.13.2-1  
 VAULT_VERSION=1.5.3  
