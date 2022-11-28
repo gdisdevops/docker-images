@@ -18,7 +18,7 @@ ARG SONOBUOY_VERSION=0.56.6
 ARG COSIGN_VERSION=1.10.1
 ARG SENTRY_CLI_VERSION=2.5.0
 # higher checkov versions suffer from https://github.com/bridgecrewio/checkov/issues/3649
-ARG CHECKOV_VERSION=2.1.219
+ARG CHECKOV_VERSION=2.2.101
 
 RUN set -eux; \
     apt-get update; \
