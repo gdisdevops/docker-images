@@ -32,6 +32,7 @@ RUN set -eux; \
         unzip \
         libffi-dev \
         jq \
+        xxd \
         python3-pip; \
     rm -rf /var/lib/apt/lists/* 
 
