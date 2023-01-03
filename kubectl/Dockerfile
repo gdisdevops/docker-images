@@ -1,7 +1,6 @@
 FROM alpine:latest
 
-ARG KUBECTL_VERSION=1.23.13
-
+ARG KUBECTL_VERSION=1.24.9
 USER root
 
 RUN wget "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl" && \
