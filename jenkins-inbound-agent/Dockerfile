@@ -33,7 +33,8 @@ RUN set -eux; \
         libffi-dev \
         jq \
         xxd \
-        python3-pip; \
+        python3-pip && \
+    python3 -m pip install --upgrade pip && \
     rm -rf /var/lib/apt/lists/* 
 
 RUN set -eux; \
