@@ -18,6 +18,7 @@ ARG SONOBUOY_VERSION=0.56.6
 ARG COSIGN_VERSION=1.10.1
 ARG SENTRY_CLI_VERSION=2.5.0
 ARG CHECKOV_VERSION=2.2.234
+ARG VAULT_CRD_RENDERER_VERSION=1.0.0
 
 RUN set -eux; \
     apt-get update; \
@@ -168,11 +169,19 @@ RUN set -eux; \
     #### install cosign
     curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
       dpkg -i cosign.deb; \
-      rm cosign.deb;
+      rm cosign.deb; \
 
-RUN mkdir -p /etc/tfenv \
-  && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
-  && chown -R jenkins /etc/tfenv 
+    #### install vault crd post renderer #TODO: Sha1 check when available
+    curl -L "https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}/vault-crd-helm-renderer.jar" -o vault-crd-helm-renderer.jar; \
+      mkdir -p /opt/daspawnw; \
+      mv vault-crd-helm-renderer.jar /opt/daspawnw/vault-crd-helm-renderer.jar; \
+
+    #### install tfenv
+    mkdir -p /etc/tfenv; \
+     git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv; \
+     chown -R jenkins /etc/tfenv; 
+
+COPY --chown=jenkins:jenkins bin/post-renderer.sh /usr/bin/post-renderer.sh
 
 USER jenkins
     #### install terraform with tfenv and helm diff
