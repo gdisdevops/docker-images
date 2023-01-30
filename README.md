@@ -4,7 +4,7 @@ Jenkins JNLP images with additional tooling.
 
 ## Jenkins Inbound Agent
 
-INBOUND_AGENT_VERSION=4.13.2-1  
+INBOUND_AGENT_VERSION=4.13.3-1  
 VAULT_VERSION=1.5.3  
 PACKER_VERSION=1.8.1  
 TERRAFORM_1_VERSION=1.0.5  
