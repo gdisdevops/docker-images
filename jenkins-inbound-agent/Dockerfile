@@ -1,4 +1,4 @@
-FROM jenkins/inbound-agent:4.13.2-1
+FROM jenkins/inbound-agent:4.13.3-1
 
 USER root
 
@@ -18,6 +18,7 @@ ARG SONOBUOY_VERSION=0.56.6
 ARG COSIGN_VERSION=1.10.1
 ARG SENTRY_CLI_VERSION=2.5.0
 ARG CHECKOV_VERSION=2.2.234
+ARG VAULT_CRD_RENDERER_VERSION=1.0.2
 
 RUN set -eux; \
     apt-get update; \
@@ -58,6 +59,7 @@ RUN set -eux; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
           SENTRY_HASHSUM="4d4bfdefc86738feec7e59ff5b0e7c824c37fa8c150e8926a020b0a1e4f84120"; \
+          VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
          ;; \
        amd64|x86_64) \
           AWS_CLI_DOWNLOAD_URL="https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
@@ -77,6 +79,7 @@ RUN set -eux; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
           SENTRY_HASHSUM="f35d3cee001eb20b0706da9ddd939890371b0fd7b430a7ef3d3dfae8718b75a3"; \
+          VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
@@ -168,11 +171,21 @@ RUN set -eux; \
     #### install cosign
     curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
       dpkg -i cosign.deb; \
-      rm cosign.deb;
+      rm cosign.deb; \
 
-RUN mkdir -p /etc/tfenv \
-  && git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv \
-  && chown -R jenkins /etc/tfenv 
+    #### install vault crd post renderer
+    curl -L "${VAULT_CRD_RENDERER_URL}/vault-crd-helm-renderer.jar" -o vault-crd-helm-renderer.jar; \
+      curl -L "${VAULT_CRD_RENDERER_URL}/vault-crd-helm-renderer.jar.sha1" -o vault-crd-helm-renderer.jar.sha1; \
+      sha1sum vault-crd-helm-renderer.jar; \
+      mkdir -p /opt/daspawnw; \
+      mv vault-crd-helm-renderer.jar /opt/daspawnw/vault-crd-helm-renderer.jar; \
+
+    #### install tfenv
+    mkdir -p /etc/tfenv; \
+     git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv; \
+     chown -R jenkins /etc/tfenv; 
+
+COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh /usr/bin/post-renderer.sh
 
 USER jenkins
     #### install terraform with tfenv and helm diff
