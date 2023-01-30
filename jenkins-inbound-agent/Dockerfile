@@ -181,7 +181,7 @@ RUN set -eux; \
      git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv; \
      chown -R jenkins /etc/tfenv; 
 
-COPY --chown=jenkins:jenkins bin/post-renderer.sh /usr/bin/post-renderer.sh
+COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh /usr/bin/post-renderer.sh
 
 USER jenkins
     #### install terraform with tfenv and helm diff
