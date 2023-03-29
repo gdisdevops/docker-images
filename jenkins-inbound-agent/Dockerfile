@@ -19,6 +19,7 @@ ARG COSIGN_VERSION=1.10.1
 ARG SENTRY_CLI_VERSION=2.5.0
 ARG CHECKOV_VERSION=2.2.234
 ARG VAULT_CRD_RENDERER_VERSION=1.0.4
+ARG PIP_HVAC_VERSION=1.1.0
 
 RUN set -eux; \
     apt-get update; \
@@ -96,7 +97,7 @@ RUN set -eux; \
 
     #### install ansible
     pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION}; \
-    pip3 install --no-cache-dir hvac; \
+    pip3 install --no-cache-dir hvac==${PIP_HVAC_VERSION}; \
     
     #### install vault
     curl -L "${VAULT_DOWNLOAD_URL}" -o "vault.zip"; \
