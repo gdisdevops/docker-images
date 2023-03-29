@@ -96,7 +96,8 @@ RUN set -eux; \
 
     #### install ansible
     pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION}; \
-
+    pip3 install --no-cache-dir hvac; \
+    
     #### install vault
     curl -L "${VAULT_DOWNLOAD_URL}" -o "vault.zip"; \
       unzip vault.zip && mv vault /usr/bin && rm vault.zip; \
