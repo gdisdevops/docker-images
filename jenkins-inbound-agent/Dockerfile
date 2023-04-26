@@ -1,23 +1,19 @@
-FROM jenkins/inbound-agent:4.13.3-1
+FROM jenkins/inbound-agent:3107.v665000b_51092-5
 
 USER root
 
-ARG VAULT_VERSION=1.5.3
-ARG PACKER_VERSION=1.8.1
-ARG TERRAFORM_1_VERSION=1.0.5
-ARG TERRAFORM_1_1_VERSION=1.1.9
-ARG KUBECTL_VERSION=1.24.9
-ARG HELM_VERSION=3.11.1
-ARG ANSIBLE_VERSION=7.1.0
-ARG TERRAFORM_DOCS_VERSION=0.10.1
-ARG CONFTEST_VERSION=0.23.0
-ARG TRIVY_VERSION=0.27.1
+ARG VAULT_VERSION=1.13.1
+ARG PACKER_VERSION=1.8.6
+ARG TERRAFORM_1_VERSION=1.3.9
+ARG KUBECTL_VERSION=1.25.8
+ARG HELM_VERSION=3.11.2
+ARG ANSIBLE_VERSION=7.3.0
+ARG CONFTEST_VERSION=0.41.0
 ARG SONAR_SCANNER_VERSION=4.7.0.2747
-ARG INFRACOST_VERSION=v0.9.24
-ARG SONOBUOY_VERSION=0.56.6
-ARG COSIGN_VERSION=1.10.1
+ARG INFRACOST_VERSION=v0.10.20
+ARG COSIGN_VERSION=1.13.1
 ARG SENTRY_CLI_VERSION=2.5.0
-ARG CHECKOV_VERSION=2.2.234
+ARG CHECKOV_VERSION=2.3.120
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
 ARG PIP_HVAC_VERSION=1.1.0
 
@@ -49,14 +45,9 @@ RUN set -eux; \
           KUBECTL_DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/arm64/kubectl"; \
           HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-arm64.tar.gz"; \
           HELM_FOLDER="linux-arm64"; \
-          TERRAFORM_DOCS_DOWNLOAD_FILE="terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-arm64"; \
-          TERRAFORM_DOCS_DOWNLOAD_URL="https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-arm64"; \
           CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_arm64.tar.gz"; \
-          TRIVY_DOWNLOAD_URL="https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-ARM64.deb"; \
           INFRACOST_DOWNLOAD_FILE="infracost-linux-arm64"; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
-          SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_arm64"; \
-          SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
           SENTRY_HASHSUM="4d4bfdefc86738feec7e59ff5b0e7c824c37fa8c150e8926a020b0a1e4f84120"; \
@@ -69,14 +60,9 @@ RUN set -eux; \
           KUBECTL_DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"; \
           HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"; \
           HELM_FOLDER="linux-amd64"; \
-          TERRAFORM_DOCS_DOWNLOAD_FILE="terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64"; \
-          TERRAFORM_DOCS_DOWNLOAD_URL="https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64"; \
           CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz"; \
-          TRIVY_DOWNLOAD_URL="https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb"; \
           INFRACOST_DOWNLOAD_FILE="infracost-linux-amd64"; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
-          SONOBUOY_DOWNLOAD_FILE="sonobuoy_${SONOBUOY_VERSION}_linux_amd64"; \
-          SONOBUOY_DOWNLOAD_URL="https://github.com/vmware-tanzu/sonobuoy/releases/download/v${SONOBUOY_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
           SENTRY_HASHSUM="f35d3cee001eb20b0706da9ddd939890371b0fd7b430a7ef3d3dfae8718b75a3"; \
@@ -116,23 +102,12 @@ RUN set -eux; \
       tar -xvzf helm.tar.gz && chmod +x "${HELM_FOLDER}/helm" && mv "${HELM_FOLDER}/helm" /usr/bin; \
       rm -rf "${HELM_FOLDER}" helm.tar.gz; \
 
-    #### install terraform-docs
-    curl -L "${TERRAFORM_DOCS_DOWNLOAD_URL}" -o "terraform-docs"; \
-      mv terraform-docs /usr/local/bin/terraform-docs; \
-      chmod a+x /usr/local/bin/terraform-docs; \
-
     #### install conftest (aka opa)
     curl -L "${CONFTEST_DOWNLOAD_URL}" -o "conftest_${CONFTEST_VERSION}.tar.gz"; \
       tar xzf "conftest_${CONFTEST_VERSION}.tar.gz"; \
       mv conftest /usr/local/bin; \
       chmod +x /usr/local/bin/conftest; \
       rm "conftest_${CONFTEST_VERSION}.tar.gz"; \
-
-    #### install trivy
-    curl -L "${TRIVY_DOWNLOAD_URL}" -o trivy.deb; \
-      dpkg -i trivy.deb; \
-      rm trivy.deb; \
-      pip3 install --no-cache-dir pyyaml nested-lookup; \
  
     #### install sonar scanner cli
     curl -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" -o "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip"; \
@@ -154,15 +129,6 @@ RUN set -eux; \
       chmod +x "/opt/infracost_bin/infracost-linux-$(dpkg --print-architecture)"; \
       mv "/opt/infracost_bin/infracost-linux-$(dpkg --print-architecture)" /opt/infracost_bin/infracost; \
       ln -s /opt/infracost_bin/infracost /usr/local/bin/infracost; \
-
-    #### install sonobuoy
-    curl -L "${SONOBUOY_DOWNLOAD_URL}/${SONOBUOY_DOWNLOAD_FILE}.tar.gz" -o "${SONOBUOY_DOWNLOAD_FILE}.tar.gz"; \
-      curl -L "${SONOBUOY_DOWNLOAD_URL}/sonobuoy_${SONOBUOY_VERSION}_checksums.txt" -o "sonobuoy_${SONOBUOY_VERSION}_checksums.txt"; \
-      sha256sum --ignore-missing -c "sonobuoy_${SONOBUOY_VERSION}_checksums.txt"; \
-      tar -xvzf "${SONOBUOY_DOWNLOAD_FILE}.tar.gz"; \
-      mv ./sonobuoy /usr/local/bin/sonobuoy; \
-      chmod +x /usr/local/bin/sonobuoy; \
-      rm "${SONOBUOY_DOWNLOAD_FILE}.tar.gz" "sonobuoy_${SONOBUOY_VERSION}_checksums.txt" LICENSE; \
 
     #### install sentry-cli
     curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
@@ -196,5 +162,4 @@ RUN helm plugin install https://github.com/databus23/helm-diff
 
 ENV PATH "$PATH:/etc/tfenv/bin"
 RUN tfenv install ${TERRAFORM_1_VERSION} \
-      && tfenv install ${TERRAFORM_1_1_VERSION} \
       && tfenv use ${TERRAFORM_1_VERSION}
