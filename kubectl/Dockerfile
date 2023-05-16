@@ -5,7 +5,7 @@ ARG KUBECTL_VERSION=1.25.8
 USER root
 
 RUN set -eux; \
-    ARCH="$(uname -i)"; \
+    ARCH="$(uname -m)"; \
     case "${ARCH}" in \
        aarch64|arm64) \
           wget "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/arm64/kubectl" && \
