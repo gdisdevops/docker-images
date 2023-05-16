@@ -25,7 +25,7 @@ RUN set -eux; \
          echo "Unsupported arch: ${ARCH}"; \
          exit 1; \
          ;; \
-    esac; \
+    esac;
 
 USER nobody
 CMD ["/bin/sh"]
