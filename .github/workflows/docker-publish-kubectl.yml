@@ -17,6 +17,7 @@ on:
     branches: [ master ]
     paths: 
     - 'kubectl/**'
+    - '.github/workflows/**'
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -92,6 +93,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,oci-mediatypes=true,compression=zstd,compression-level=3,force-compression=true,push=${{ github.event_name != 'pull_request' }}
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
