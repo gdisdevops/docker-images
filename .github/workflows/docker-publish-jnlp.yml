@@ -57,6 +57,7 @@ jobs:
         uses: lerentis/soci-installer@v1.0.0
         with:
           soci-release: 'v0.3.0'
+          install-dir: /usr/bin/
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
