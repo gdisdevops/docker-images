@@ -104,8 +104,8 @@ jobs:
       - name: Create and push soci index
         if: ${{ github.event_name != 'pull_request' }}
         run: |
-          soci create "${TAGS}"
-          soci push "${TAGS}"
+          sudo soci create "${TAGS}"
+          sudo soci push "${TAGS}"
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
 
