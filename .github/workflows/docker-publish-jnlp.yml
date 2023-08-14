@@ -105,10 +105,18 @@ jobs:
       - name: Create and push soci index
         if: ${{ github.event_name != 'pull_request' }}
         run: |
-          sudo soci create "${TAGS}"
-          sudo soci push "${TAGS}"
-        env:
-          TAGS: ${{ steps.meta.outputs.tags }}
+          sudo soci create ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{ github.event.repository.default_branch }}
+          sudo soci create ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:latest
+          sudo soci push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{ github.event.repository.default_branch }}
+          sudo soci push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:latest
+
+      - name: Create and push soci index for new releases
+        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+        run: |
+          sudo soci create ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{ github.event.ref }}
+          sudo soci create ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:latest
+          sudo soci push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:{{ github.event.ref }}
+          sudo soci push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:latest
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
