@@ -100,16 +100,17 @@ jobs:
           context: .
           file: ${{ matrix.image }}/Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=oci,dest=/tmp/image.tar
 
       - name: Import image in containerd
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
           sudo ctr i import --base-name  ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }} --digests --all-platforms /tmp/image.tar
 
       - name: Push image with containerd
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
           sudo ctr i push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{ github.event.repository.default_branch }}
           sudo ctr i push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:latest
