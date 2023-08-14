@@ -125,14 +125,14 @@ jobs:
         run: |
           sudo soci create ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{ github.event.repository.default_branch }}
           sudo soci create ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:latest
-          sudo soci --user "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{ github.event.repository.default_branch }}
-          sudo soci --user "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:latest
+          sudo soci push --user ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{ github.event.repository.default_branch }}
+          sudo soci push --user ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:latest
 
       - name: Create and push soci index for new releases
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
           sudo soci create ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{ github.event.ref }}
-          sudo soci --user "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:{{ github.event.ref }}
+          sudo soci push --user ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:{{ github.event.ref }}
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
