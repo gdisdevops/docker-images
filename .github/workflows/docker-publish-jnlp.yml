@@ -117,7 +117,7 @@ jobs:
       - name: Push release image with containerd
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
-          sudo ctr i push --user "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{env.GITHUB_REF_NAME}}
+          sudo ctr i push --user "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{  github.ref_name }}
 
       - name: Create and push soci index
         if: ${{ github.event_name != 'pull_request' }}
@@ -128,8 +128,8 @@ jobs:
       - name: Create and push soci index for new releases
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         run: |
-          sudo soci create ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{env.GITHUB_REF_NAME}}
-          sudo soci push --user ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{env.GITHUB_REF_NAME}}
+          sudo soci create ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{  github.ref_name }}
+          sudo soci push --user ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:${{  github.ref_name }}
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
