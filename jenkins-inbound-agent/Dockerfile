@@ -1,21 +1,20 @@
-FROM jenkins/inbound-agent:3107.v665000b_51092-5
+FROM jenkins/inbound-agent:3148.v532a_7e715ee3-7
 
 USER root
 
-ARG VAULT_VERSION=1.13.1
-ARG PACKER_VERSION=1.8.6
-ARG TERRAFORM_1_VERSION=1.3.9
-ARG KUBECTL_VERSION=1.26.7
-ARG HELM_VERSION=3.11.2
-ARG ANSIBLE_VERSION=7.3.0
-ARG CONFTEST_VERSION=0.41.0
-ARG SONAR_SCANNER_VERSION=4.7.0.2747
-ARG INFRACOST_VERSION=v0.10.20
+ARG VAULT_VERSION=1.14.3
+ARG PACKER_VERSION=1.9.4
+ARG TERRAFORM_1_VERSION=1.5.7
+ARG KUBECTL_VERSION=1.26.8
+ARG HELM_VERSION=3.12.3
+ARG ANSIBLE_VERSION=8.4.0
+ARG CONFTEST_VERSION=0.45.0
+ARG INFRACOST_VERSION=v0.10.29
 ARG COSIGN_VERSION=1.13.1
-ARG SENTRY_CLI_VERSION=2.5.0
-ARG CHECKOV_VERSION=2.3.120
+ARG SENTRY_CLI_VERSION=2.20.7
+ARG CHECKOV_VERSION=2.4.36
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
-ARG PIP_HVAC_VERSION=1.1.0
+ARG PIP_HVAC_VERSION=1.2.1
 
 RUN set -eux; \
     apt-get update; \
@@ -32,7 +31,7 @@ RUN set -eux; \
         jq \
         xxd \
         python3-pip && \
-    python3 -m pip install --upgrade pip && \
+    python3 -m pip install --upgrade pip --break-system-packages && \
     rm -rf /var/lib/apt/lists/* 
 
 RUN set -eux; \
@@ -50,7 +49,7 @@ RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
-          SENTRY_HASHSUM="4d4bfdefc86738feec7e59ff5b0e7c824c37fa8c150e8926a020b0a1e4f84120"; \
+          SENTRY_HASHSUM="deab6568a7c5ba5af03674e23b3afc26f439b8d7b1f32c04f955c5af1a7552f7"; \
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
          ;; \
        amd64|x86_64) \
@@ -65,7 +64,7 @@ RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
-          SENTRY_HASHSUM="f35d3cee001eb20b0706da9ddd939890371b0fd7b430a7ef3d3dfae8718b75a3"; \
+          SENTRY_HASHSUM="5cd1c556bb33854e2c30f2c02beb8fefcc9da03212285ede9b4550820285beb1"; \
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
          ;; \
        *) \
@@ -79,11 +78,11 @@ RUN set -eux; \
       unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf aws; \
 
     #### install boto3, checov and pre-commit
-    pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} pre-commit; \
+    pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} pre-commit --break-system-packages; \
 
     #### install ansible
-    pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION}; \
-    pip3 install --no-cache-dir hvac==${PIP_HVAC_VERSION}; \
+    pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION} --break-system-packages; \
+    pip3 install --no-cache-dir hvac==${PIP_HVAC_VERSION} --break-system-packages; \
     
     #### install vault
     curl -L "${VAULT_DOWNLOAD_URL}" -o "vault.zip"; \
@@ -108,16 +107,6 @@ RUN set -eux; \
       mv conftest /usr/local/bin; \
       chmod +x /usr/local/bin/conftest; \
       rm "conftest_${CONFTEST_VERSION}.tar.gz"; \
- 
-    #### install sonar scanner cli
-    curl -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" -o "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip"; \
-      curl -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256" -o "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256"; \
-      echo $(cat "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256")  "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" | sha256sum -c; \
-      unzip "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip"; \
-      rm "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256"; \
-      chmod +x "sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner"; \
-      mv "sonar-scanner-${SONAR_SCANNER_VERSION}" "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}"; \
-      ln -s "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner" /usr/local/bin/sonar-scanner; \
 
     #### install infracost
     curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz"; \
