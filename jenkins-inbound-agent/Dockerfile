@@ -78,11 +78,11 @@ RUN set -eux; \
       unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf aws; \
 
     #### install boto3, checov and pre-commit
-    pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} pre-commit; \
+    pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} pre-commit --break-system-packages; \
 
     #### install ansible
-    pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION}; \
-    pip3 install --no-cache-dir hvac==${PIP_HVAC_VERSION}; \
+    pip3 install --no-cache-dir ansible==${ANSIBLE_VERSION} --break-system-packages; \
+    pip3 install --no-cache-dir hvac==${PIP_HVAC_VERSION} --break-system-packages; \
     
     #### install vault
     curl -L "${VAULT_DOWNLOAD_URL}" -o "vault.zip"; \
