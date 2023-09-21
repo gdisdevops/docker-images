@@ -1,9 +1,7 @@
 name: Renovate
 
 on:
-  push:
-    branches:
-      - "feature/ECLOUD-4232-Update-dependencies-in-build-image"
+  workflow_dispatch:
 
 jobs:
   renovate:
