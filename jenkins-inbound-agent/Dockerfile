@@ -31,7 +31,7 @@ RUN set -eux; \
         jq \
         xxd \
         python3-pip && \
-    python3 -m pip install --upgrade pip && \
+    python3 -m pip install --upgrade pip --break-system-packages && \
     rm -rf /var/lib/apt/lists/* 
 
 RUN set -eux; \
