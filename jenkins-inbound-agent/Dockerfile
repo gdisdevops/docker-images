@@ -9,7 +9,6 @@ ARG KUBECTL_VERSION=1.26.8
 ARG HELM_VERSION=3.12.3
 ARG ANSIBLE_VERSION=8.4.0
 ARG CONFTEST_VERSION=0.45.0
-ARG SONAR_SCANNER_VERSION=5.0.1.3006
 ARG INFRACOST_VERSION=v0.10.29
 ARG COSIGN_VERSION=1.13.1
 ARG SENTRY_CLI_VERSION=2.20.7
@@ -108,16 +107,6 @@ RUN set -eux; \
       mv conftest /usr/local/bin; \
       chmod +x /usr/local/bin/conftest; \
       rm "conftest_${CONFTEST_VERSION}.tar.gz"; \
- 
-    #### install sonar scanner cli
-    curl -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" -o "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip"; \
-      curl -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256" -o "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256"; \
-      echo $(cat "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256")  "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" | sha256sum -c; \
-      unzip "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip"; \
-      rm "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip" "sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip.sha256"; \
-      chmod +x "sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner"; \
-      mv "sonar-scanner-${SONAR_SCANNER_VERSION}" "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}"; \
-      ln -s "/opt/sonar-scanner-${SONAR_SCANNER_VERSION}/bin/sonar-scanner" /usr/local/bin/sonar-scanner; \
 
     #### install infracost
     curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz"; \
