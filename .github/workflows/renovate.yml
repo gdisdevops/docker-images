@@ -1,0 +1,16 @@
+name: Renovate
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"  
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Run Renovate
+        run: docker run --rm -v $(pwd):/app renovate/renovate --config .github/renovate.json
