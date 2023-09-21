@@ -6,6 +6,9 @@
     "branchConcurrentLimit": 6,
     "prConcurrentLimit": 10,
     "prHourlyLimit": 10,
+    "enabledManagers": [
+        "regex"
+    ],
     "packageRules": [
         {
             "matchDatasources": ["docker"],
