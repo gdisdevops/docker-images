@@ -2,11 +2,10 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["config:base"],
     "ignorePresets": [":prHourlyLimit2"],
-    "labels": ["update-dependencies"],
     "baseBranches": ["master"],
     "branchConcurrentLimit": 6,
-    "prConcurrentLimit": 6,
-    "prHourlyLimit": 6,
+    "prConcurrentLimit": 10,
+    "prHourlyLimit": 10,
     "packageRules": [
         {
             "matchDatasources": ["docker"],
@@ -19,12 +18,7 @@
         },
         {
             "matchDatasources": ["github-releases"],
-            "matchPackageNames": ["open-policy-agent/conftest", "infracost/infracost", "sigstore/cosign", "DaspawnW/vault-crd-helm-renderer"],
-            "versioning": "semver"
-        },
-
-        {
-            "matchPackageNames": ["vault", "packer", "kubectl", "helm", "sentry-cli", "tfenv", "sonar-scanner-cli" ],
+            "matchPackageNames": ["hashicorp/vault", "hashicorp/packer", "hashicorp/terraform", "helm/helm", "open-policy-agent/conftest", "infracost/infracost", "sigstore/cosign", "getsentry/sentry-cli", "DaspawnW/vault-crd-helm-renderer"],
             "versioning": "semver"
         }
     ],
@@ -32,26 +26,30 @@
         {
             "fileMatch": ["Dockerfile"],
             "matchStrings": ["VAULT_VERSION=(?<currentValue>.*?)"],
-            "depNameTemplate": "vault",
-            "datasourceTemplate": "vault"
+            "depNameTemplate": "hashicorp/vault",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": ["Dockerfile"],
             "matchStrings": ["PACKER_VERSION=(?<currentValue>.*?)"],
-            "depNameTemplate": "packer",
-            "datasourceTemplate": "packer"
+            "depNameTemplate": "hashicorp/packer",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": ["Dockerfile"],
-            "matchStrings": ["KUBECTL_VERSION=(?<currentValue>.*?)"],
-            "depNameTemplate": "kubectl",
-            "datasourceTemplate": "kubectl"
+            "matchStrings": ["TERRAFORM_1_VERSION=(?<currentValue>.*?)"],
+            "depNameTemplate": "hashicorp/terraform",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": ["Dockerfile"],
             "matchStrings": ["HELM_VERSION=(?<currentValue>.*?)"],
-            "depNameTemplate": "helm",
-            "datasourceTemplate": "helm"
+            "depNameTemplate": "helm/helm",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": ["Dockerfile"],
@@ -65,12 +63,6 @@
             "depNameTemplate": "open-policy-agent/conftest",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
-        },
-        {
-            "fileMatch": ["Dockerfile"],
-            "matchStrings": ["SONAR_SCANNER_VERSION=(?<currentValue>.*?)"],
-            "depNameTemplate": "sonar-scanner-cli",
-            "datasourceTemplate": "sonar-scanner-cli"
         },
         {
             "fileMatch": ["Dockerfile"],
@@ -89,14 +81,15 @@
         {
             "fileMatch": ["Dockerfile"],
             "matchStrings": ["SENTRY_CLI_VERSION=(?<currentValue>.*?)"],
-            "depNameTemplate": "sentry-cli",
-            "datasourceTemplate": "sentry-cli"
+            "depNameTemplate": "getsentry/sentry-cli",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^(?<version>.*)$"
         },
         {
-          "fileMatch": ["Dockerfile"],
-          "matchStrings": ["CHECKOV_VERSION=(?<currentValue>.*?) "],
-          "depNameTemplate": "checkov",
-          "datasourceTemplate": "pypi"
+            "fileMatch": ["Dockerfile"],
+            "matchStrings": ["CHECKOV_VERSION=(?<currentValue>.*?) "],
+            "depNameTemplate": "checkov",
+            "datasourceTemplate": "pypi"
         },
         {
             "fileMatch": ["Dockerfile"],
@@ -106,16 +99,10 @@
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
-          "fileMatch": ["Dockerfile"],
-          "matchStrings": ["PIP_HVAC_VERSION=(?<currentValue>.*?)"],
-          "depNameTemplate": "hvac",
-          "datasourceTemplate": "pypi"
-        },
-        {
             "fileMatch": ["Dockerfile"],
-            "matchStrings": ["TERRAFORM_1_VERSION=(?<currentValue>.*?)"],
-            "depNameTemplate": "tfenv",
-            "datasourceTemplate": "tfenv"
+            "matchStrings": ["PIP_HVAC_VERSION=(?<currentValue>.*?)"],
+            "depNameTemplate": "hvac",
+            "datasourceTemplate": "pypi"
         }
     ]
 }
