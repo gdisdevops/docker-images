@@ -21,3 +21,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
           RENOVATE_REPOSITORIES: "gdisdevops/docker-images"
+          RENOVATE_ONBOARDING: false
