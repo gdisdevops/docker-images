@@ -88,7 +88,7 @@
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["ARG CHECKOV_VERSION=(?<currentValue>.*?) "],
+            "matchStrings": ["ARG CHECKOV_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "checkov",
             "datasourceTemplate": "pypi"
         },
