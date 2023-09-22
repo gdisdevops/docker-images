@@ -28,82 +28,82 @@
     "regexManagers": [
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["VAULT_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG VAULT_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "hashicorp/vault",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["PACKER_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG PACKER_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "hashicorp/packer",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["TERRAFORM_1_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG TERRAFORM_1_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "hashicorp/terraform",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["HELM_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG HELM_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "helm/helm",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["ANSIBLE_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG ANSIBLE_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "ansible",
             "datasourceTemplate": "pypi"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["CONFTEST_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG CONFTEST_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "open-policy-agent/conftest",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["INFRACOST_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG INFRACOST_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "infracost/infracost",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["COSIGN_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG COSIGN_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "sigstore/cosign",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["SENTRY_CLI_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG SENTRY_CLI_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "getsentry/sentry-cli",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^(?<version>.*)$"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["CHECKOV_VERSION=(?<currentValue>.*?) "],
+            "matchStrings": ["ARG CHECKOV_VERSION=(?<currentValue>.*?) "],
             "depNameTemplate": "checkov",
             "datasourceTemplate": "pypi"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["VAULT_CRD_RENDERER_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG VAULT_CRD_RENDERER_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "DaspawnW/vault-crd-helm-renderer",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": ["PIP_HVAC_VERSION=(?<currentValue>.*?)"],
+            "matchStrings": ["ARG PIP_HVAC_VERSION=(?<currentValue>.*?)"],
             "depNameTemplate": "hvac",
             "datasourceTemplate": "pypi"
         }
