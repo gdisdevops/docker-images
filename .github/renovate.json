@@ -11,13 +11,9 @@
     ],
     "packageRules": [
         {
-            "matchDatasources": ["docker"],
-            "versioning": "semver"
-        },
-        {
             "matchDatasources": ["pypi"],
             "matchPackageNames": ["checkov", "ansible", "hvac"],
-            "versioning": "semver"
+            "versioning": "python"
         },
         {
             "matchDatasources": ["github-releases"],
