@@ -1,9 +1,15 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:base"],
-    "ignorePresets": [":prHourlyLimit2"],
-    "baseBranches": ["master"],
-    "branchConcurrentLimit": 6,
+    "extends": [
+        "config:recommended"
+    ],
+    "ignorePresets": [
+        ":prHourlyLimit2"
+    ],
+    "baseBranches": [
+        "master"
+    ],
+    "branchConcurrentLimit": 20,
     "prConcurrentLimit": 10,
     "prHourlyLimit": 10,
     "enabledManagers": [
@@ -11,100 +17,180 @@
     ],
     "packageRules": [
         {
-            "matchDatasources": ["pypi"],
-            "matchPackageNames": ["checkov", "ansible", "hvac"],
+            "matchDatasources": [
+                "pypi"
+            ],
+            "matchPackageNames": [
+                "checkov",
+                "ansible",
+                "hvac"
+            ],
             "versioning": "python"
         },
         {
-            "matchDatasources": ["github-releases"],
-            "matchPackageNames": ["helm/helm", "open-policy-agent/conftest", "infracost/infracost", "sigstore/cosign", "getsentry/sentry-cli", "DaspawnW/vault-crd-helm-renderer"],
+            "matchDatasources": [
+                "github-releases"
+            ],
+            "matchPackageNames": [
+                "helm/helm",
+                "open-policy-agent/conftest",
+                "infracost/infracost",
+                "sigstore/cosign",
+                "getsentry/sentry-cli",
+                "DaspawnW/vault-crd-helm-renderer"
+            ],
             "versioning": "semver"
         },
         {
-            "matchDatasources": ["github-releases"],
-            "matchPackageNames": ["hashicorp/vault", "hashicorp/packer", "hashicorp/terraform"],
+            "matchDatasources": [
+                "github-releases"
+            ],
+            "matchPackageNames": [
+                "hashicorp/vault",
+                "hashicorp/packer",
+                "hashicorp/terraform"
+            ],
             "versioning": "hashicorp"
         }
     ],
     "regexManagers": [
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sVAULT_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sVAULT_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "hashicorp/vault",
             "datasourceTemplate": "github-releases"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sPACKER_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sPACKER_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "hashicorp/packer",
             "datasourceTemplate": "github-releases"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sTERRAFORM_1_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sTERRAFORM_1_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "hashicorp/terraform",
             "datasourceTemplate": "github-releases"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sHELM_VERSION=(?<currentValue>v\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sHELM_VERSION=(?<currentValue>v\\d.*\\.?)"
+            ],
             "depNameTemplate": "helm/helm",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sANSIBLE_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sANSIBLE_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "ansible",
             "datasourceTemplate": "pypi"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sCONFTEST_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sCONFTEST_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "open-policy-agent/conftest",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sINFRACOST_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sINFRACOST_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "infracost/infracost",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sCOSIGN_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sCOSIGN_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "sigstore/cosign",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sSENTRY_CLI_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sSENTRY_CLI_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "getsentry/sentry-cli",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^(?<version>.*)$"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sCHECKOV_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sCHECKOV_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "checkov",
             "datasourceTemplate": "pypi"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sVAULT_CRD_RENDERER_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sVAULT_CRD_RENDERER_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "DaspawnW/vault-crd-helm-renderer",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
-            "fileMatch": [".*\\\/Dockerfile"],
-            "matchStrings": [".*\\sPIP_HVAC_VERSION=(?<currentValue>\\d.*\\.?)"],
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sPIP_HVAC_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
             "depNameTemplate": "hvac",
             "datasourceTemplate": "pypi"
         }
     ]
 }
-    
