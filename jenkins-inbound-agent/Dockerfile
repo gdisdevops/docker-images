@@ -49,7 +49,7 @@ RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
-          SENTRY_HASHSUM="deab6568a7c5ba5af03674e23b3afc26f439b8d7b1f32c04f955c5af1a7552f7"; \
+          SENTRY_HASHSUM="d48487cac4b9975415e88eabbd1abf23a2d8f617f0468cf511cb42895288b858"; \
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
          ;; \
        amd64|x86_64) \
@@ -64,7 +64,7 @@ RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
-          SENTRY_HASHSUM="5cd1c556bb33854e2c30f2c02beb8fefcc9da03212285ede9b4550820285beb1"; \
+          SENTRY_HASHSUM="e3739b5525cf56c4b1242b14fe75e5ac52693607cb04d6a7ca83abf72cd3c5e0"; \
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
          ;; \
        *) \
