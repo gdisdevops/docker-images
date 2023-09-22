@@ -6,7 +6,7 @@ ARG VAULT_VERSION=1.14.3
 ARG PACKER_VERSION=1.9.4
 ARG TERRAFORM_1_VERSION=1.5.7
 ARG KUBECTL_VERSION=1.26.8
-ARG HELM_VERSION=3.12.3
+ARG HELM_VERSION=v3.12.3
 ARG ANSIBLE_VERSION=8.4.0
 ARG CONFTEST_VERSION=0.45.0
 ARG INFRACOST_VERSION=v0.10.29
@@ -42,7 +42,7 @@ RUN set -eux; \
           VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_arm64.zip"; \
           PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_arm64.zip"; \
           KUBECTL_DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/arm64/kubectl"; \
-          HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-arm64.tar.gz"; \
+          HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-arm64.tar.gz"; \
           HELM_FOLDER="linux-arm64"; \
           CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_arm64.tar.gz"; \
           INFRACOST_DOWNLOAD_FILE="infracost-linux-arm64"; \
@@ -57,7 +57,7 @@ RUN set -eux; \
           VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip"; \
           PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"; \
           KUBECTL_DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"; \
-          HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"; \
+          HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"; \
           HELM_FOLDER="linux-amd64"; \
           CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz"; \
           INFRACOST_DOWNLOAD_FILE="infracost-linux-amd64"; \
