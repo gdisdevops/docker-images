@@ -16,6 +16,8 @@ ARG CHECKOV_VERSION=2.4.36
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
 ARG PIP_HVAC_VERSION=1.2.1
 
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+
 RUN set -eux; \
     apt-get update; \
     apt-get dist-upgrade -y; \
@@ -31,7 +33,7 @@ RUN set -eux; \
         jq \
         xxd \
         python3-pip && \
-    python3 -m pip install --upgrade pip --break-system-packages && \
+    python3 -m pip install --upgrade pip && \
     rm -rf /var/lib/apt/lists/* 
 
 RUN set -eux; \
@@ -78,7 +80,7 @@ RUN set -eux; \
       unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf aws; \
 
     #### install boto3, checov, ansible, hvac and pre-commit
-    pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} ansible==${ANSIBLE_VERSION} hvac==${PIP_HVAC_VERSION} pre-commit --break-system-packages; \
+    pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} ansible==${ANSIBLE_VERSION} hvac==${PIP_HVAC_VERSION} pre-commit; \
     
     #### install vault
     curl -L "${VAULT_DOWNLOAD_URL}" -o "vault.zip"; \
