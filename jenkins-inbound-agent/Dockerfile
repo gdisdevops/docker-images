@@ -15,6 +15,7 @@ ARG SENTRY_CLI_VERSION=2.21.2
 ARG CHECKOV_VERSION=2.4.36
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
 ARG PIP_HVAC_VERSION=1.2.1
+ARG KYVERNO_CLI_VERSION=v1.11.0-rc.4
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
@@ -53,6 +54,7 @@ RUN set -eux; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
           SENTRY_HASHSUM="aa6085a9b24e349dbcef301127aebc6e8c3adfa8389964df5e91d96b3fb92e08"; \
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
+          KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_arm64.tar.gz" \
          ;; \
        amd64|x86_64) \
           AWS_CLI_DOWNLOAD_URL="https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
@@ -68,6 +70,7 @@ RUN set -eux; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
           SENTRY_HASHSUM="0016d21b20d6b83fe10d514d10ca1dbed854e8694d71fada9749e702730ed728"; \
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
+          KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_x86_64.tar.gz" \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \
@@ -138,7 +141,14 @@ RUN set -eux; \
     #### install tfenv
     mkdir -p /etc/tfenv; \
      git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv; \
-     chown -R jenkins /etc/tfenv; 
+     chown -R jenkins /etc/tfenv; \
+
+    #### install kyverno cli
+    curl -L "${KYVERNO_CLI_DOWNLOAD_URL}" -o "kyverno_cli.tar.gz"; \
+      tar xzf "kyverno_cli.tar.gz"; \
+      mv kyverno /usr/local/bin; \
+      chmod +x /usr/local/bin/kyverno; \
+      rm "kyverno_cli.tar.gz" "LICENSE"; 
 
 COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh /usr/bin/post-renderer.sh
 
