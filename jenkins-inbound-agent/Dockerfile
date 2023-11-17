@@ -15,7 +15,7 @@ ARG SENTRY_CLI_VERSION=2.21.2
 ARG CHECKOV_VERSION=2.4.36
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
 ARG PIP_HVAC_VERSION=1.2.1
-ARG KYVERNO_CLI_VERSION=v1.11.0-rc.4
+ARG KYVERNO_CLI_VERSION=v1.11.0
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
@@ -32,6 +32,7 @@ RUN set -eux; \
         unzip \
         libffi-dev \
         jq \
+        yq \
         xxd \
         python3-pip && \
     python3 -m pip install --upgrade pip && \
