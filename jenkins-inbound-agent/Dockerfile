@@ -151,7 +151,7 @@ RUN set -eux; \
       chmod +x /usr/local/bin/kyverno; \
       rm "kyverno_cli.tar.gz" "LICENSE"; 
 
-COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh /usr/bin/post-renderer.sh
+COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-inbound-agent/bin/check-default-namespace.sh /usr/bin/
 
 USER jenkins
     #### install terraform with tfenv and helm diff
