@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 ## Check if the kubernetes manifest have explicitly set default namespace
 if [ "$#" -eq 0 ]
