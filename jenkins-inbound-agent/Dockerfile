@@ -10,7 +10,7 @@ ARG HELM_VERSION=v3.12.3
 ARG ANSIBLE_VERSION=8.4.0
 ARG INFRACOST_VERSION=v0.10.29
 ARG COSIGN_VERSION=1.13.2
-ARG SENTRY_CLI_VERSION=2.21.2
+ARG SENTRY_CLI_VERSION=2.30.1
 ARG CHECKOV_VERSION=2.4.36
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
 ARG PIP_HVAC_VERSION=1.2.1
@@ -51,7 +51,7 @@ RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
-          SENTRY_HASHSUM="aa6085a9b24e349dbcef301127aebc6e8c3adfa8389964df5e91d96b3fb92e08"; \
+          SENTRY_HASHSUM="11dee7f6459245d8cedbce4139342b89d24759bba7a90205be4e4b9cbdd2b7e5"; \
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
           KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_arm64.tar.gz" \
          ;; \
@@ -66,7 +66,7 @@ RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
-          SENTRY_HASHSUM="0016d21b20d6b83fe10d514d10ca1dbed854e8694d71fada9749e702730ed728"; \
+          SENTRY_HASHSUM="35ccca7cf53e2b7cd5f76311b43315f3267ee123af0184671cca6746c7499b10"; \
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
           KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_x86_64.tar.gz" \
          ;; \

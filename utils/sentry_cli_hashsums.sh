@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SENTRY_CLI_VERSION=2.21.2
+SENTRY_CLI_VERSION=2.30.1
 SENTRY_DOWNLOAD_URL_ARM="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"
 SENTRY_DOWNLOAD_URL_x86="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"
 
