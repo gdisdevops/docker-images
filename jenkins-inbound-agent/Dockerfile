@@ -2,20 +2,19 @@ FROM jenkins/inbound-agent:3148.v532a_7e715ee3-7
 
 USER root
 
-ARG VAULT_VERSION=1.15.2
-ARG PACKER_VERSION=1.9.4
+ARG VAULT_VERSION=1.15.6
+ARG PACKER_VERSION=1.10.2
 ARG TERRAFORM_1_VERSION=1.7.4
 ARG KUBECTL_VERSION=1.26.8
 ARG HELM_VERSION=v3.12.3
 ARG ANSIBLE_VERSION=8.4.0
-ARG CONFTEST_VERSION=0.46.0
 ARG INFRACOST_VERSION=v0.10.29
 ARG COSIGN_VERSION=1.13.1
 ARG SENTRY_CLI_VERSION=2.21.2
 ARG CHECKOV_VERSION=2.4.36
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
 ARG PIP_HVAC_VERSION=1.2.1
-ARG KYVERNO_CLI_VERSION=v1.11.0
+ARG KYVERNO_CLI_VERSION=v1.11.4
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
@@ -48,7 +47,6 @@ RUN set -eux; \
           KUBECTL_DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/arm64/kubectl"; \
           HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-arm64.tar.gz"; \
           HELM_FOLDER="linux-arm64"; \
-          CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_arm64.tar.gz"; \
           INFRACOST_DOWNLOAD_FILE="infracost-linux-arm64"; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb"; \
@@ -64,7 +62,6 @@ RUN set -eux; \
           KUBECTL_DOWNLOAD_URL="https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"; \
           HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"; \
           HELM_FOLDER="linux-amd64"; \
-          CONFTEST_DOWNLOAD_URL="https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz"; \
           INFRACOST_DOWNLOAD_FILE="infracost-linux-amd64"; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
@@ -102,13 +99,6 @@ RUN set -eux; \
     curl -L "${HELM_DOWNLOAD_URL}" -o "helm.tar.gz"; \
       tar -xvzf helm.tar.gz && chmod +x "${HELM_FOLDER}/helm" && mv "${HELM_FOLDER}/helm" /usr/bin; \
       rm -rf "${HELM_FOLDER}" helm.tar.gz; \
-
-    #### install conftest (aka opa)
-    curl -L "${CONFTEST_DOWNLOAD_URL}" -o "conftest_${CONFTEST_VERSION}.tar.gz"; \
-      tar xzf "conftest_${CONFTEST_VERSION}.tar.gz"; \
-      mv conftest /usr/local/bin; \
-      chmod +x /usr/local/bin/conftest; \
-      rm "conftest_${CONFTEST_VERSION}.tar.gz"; \
 
     #### install infracost
     curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz"; \
