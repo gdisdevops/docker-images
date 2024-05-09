@@ -31,6 +31,7 @@ RUN set -eux; \
         unzip \
         libffi-dev \
         jq \
+        jc \
         yq \
         xxd \
         python3-pip && \
