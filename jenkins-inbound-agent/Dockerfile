@@ -28,6 +28,7 @@ RUN set -eux; \
         init \
         openssh-server openssh-client \
         software-properties-common \
+        postgresql-client-15 \
         unzip \
         libffi-dev \
         jq \
