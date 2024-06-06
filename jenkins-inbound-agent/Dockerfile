@@ -2,18 +2,18 @@ FROM jenkins/inbound-agent:3148.v532a_7e715ee3-7
 
 USER root
 
-ARG VAULT_VERSION=1.16.1
-ARG PACKER_VERSION=1.10.2
-ARG TERRAFORM_1_VERSION=1.8.1
+ARG VAULT_VERSION=1.16.3
+ARG PACKER_VERSION=1.11.0
+ARG TERRAFORM_1_VERSION=1.8.4
 ARG KUBECTL_VERSION=1.26.8
 ARG HELM_VERSION=v3.12.3
-ARG ANSIBLE_VERSION=9.4.0
+ARG ANSIBLE_VERSION=9.6.0
 ARG INFRACOST_VERSION=v0.10.29
 ARG COSIGN_VERSION=1.13.6
-ARG SENTRY_CLI_VERSION=2.31.0
+ARG SENTRY_CLI_VERSION=2.32.1
 ARG CHECKOV_VERSION=3.2.122
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
-ARG PIP_HVAC_VERSION=2.1.0
+ARG PIP_HVAC_VERSION=2.2.0
 ARG KYVERNO_CLI_VERSION=v1.11.4
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
@@ -28,6 +28,7 @@ RUN set -eux; \
         init \
         openssh-server openssh-client \
         software-properties-common \
+        postgresql-client-15 \
         unzip \
         libffi-dev \
         jq \
@@ -52,7 +53,7 @@ RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
-          SENTRY_HASHSUM="2b92198d58ffd2f4551db6782b42b42ecc1ba3c7c7864f0c4ae84be940f927d3"; \
+          SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-aarch64".checksums."sha256-hex"');\
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
           KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_arm64.tar.gz" \
          ;; \
@@ -67,7 +68,7 @@ RUN set -eux; \
           INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
           COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
           SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
-          SENTRY_HASHSUM="baeb5b4ca0a5e500d667087f0b7fbb2865d3b8f01896cfba5144433dbe59bebd"; \
+          SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-x86_64".checksums."sha256-hex"');\
           VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
           KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_x86_64.tar.gz" \
          ;; \
