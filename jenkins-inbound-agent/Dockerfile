@@ -77,31 +77,31 @@ RUN set -eux; \
          exit 1; \
          ;; \
     esac; \
-
     #### install aws cli
-    curl "${AWS_CLI_DOWNLOAD_URL}" -o "awscliv2.zip"; \
-      unzip awscliv2.zip && ./aws/install && rm awscliv2.zip && rm -rf aws; \
-
+    _aws_cli_tmp_dir=$(mktemp -d) && cd "${_aws_cli_tmp_dir}"; \
+      curl "${AWS_CLI_DOWNLOAD_URL}" -o "${_aws_cli_tmp_dir}/awscliv2.zip"; \
+      unzip "${_aws_cli_tmp_dir}/awscliv2.zip" && ./aws/install && cd ; \
+      rm -rf "${_aws_cli_tmp_dir}"; \
     #### install boto3, checov, ansible, hvac and pre-commit
     pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} ansible==${ANSIBLE_VERSION} hvac==${PIP_HVAC_VERSION} pre-commit; \
-    
     #### install vault
-    curl -L "${VAULT_DOWNLOAD_URL}" -o "vault.zip"; \
-      unzip vault.zip && mv vault /usr/bin && rm vault.zip; \
-
+    _vault_tmp_dir=$(mktemp -d) && cd "${_vault_tmp_dir}"; \
+      curl -L "${VAULT_DOWNLOAD_URL}" -o "${_vault_tmp_dir}/vault.zip"; \
+      unzip "${_vault_tmp_dir}/vault.zip" && mv "${_vault_tmp_dir}/vault" /usr/bin && cd ;\
+      rm -rf "${_vault_tmp_dir}"; \
     #### install packer
-    curl -L "${PACKER_DOWNLOAD_URL}" -o "packer.zip"; \
-      unzip packer.zip && mv packer /usr/bin && rm packer.zip; \
-
+    _packer_tmp_dir=$(mktemp -d) && cd "${_packer_tmp_dir}"; \
+      curl -L "${PACKER_DOWNLOAD_URL}" -o "${_packer_tmp_dir}/packer.zip"; \
+      unzip "${_packer_tmp_dir}/packer.zip" && mv packer /usr/bin && cd ; \
+      rm -rf "${_packer_tmp_dir}"; \
     #### install kubectl
     curl -L "${KUBECTL_DOWNLOAD_URL}" -o "kubectl"; \
       chmod +x kubectl && mv kubectl /usr/bin; \
-
     #### install helm
-    curl -L "${HELM_DOWNLOAD_URL}" -o "helm.tar.gz"; \
-      tar -xvzf helm.tar.gz && chmod +x "${HELM_FOLDER}/helm" && mv "${HELM_FOLDER}/helm" /usr/bin; \
-      rm -rf "${HELM_FOLDER}" helm.tar.gz; \
-
+    _helm_tmp_dir=$(mktemp -d) && cd "${_helm_tmp_dir}"; \
+      curl -L "${HELM_DOWNLOAD_URL}" -o "${_helm_tmp_dir}/helm.tar.gz"; \
+      tar -xvzf "${_helm_tmp_dir}/helm.tar.gz" && chmod +x "${_helm_tmp_dir}/${HELM_FOLDER}/helm" && mv "${_helm_tmp_dir}/${HELM_FOLDER}/helm" /usr/bin; \
+      cd && rm -rf "${_helm_tmp_dir}"; \
     #### install infracost
     curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz"; \
       curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
@@ -112,36 +112,32 @@ RUN set -eux; \
       chmod +x "/opt/infracost_bin/infracost-linux-$(dpkg --print-architecture)"; \
       mv "/opt/infracost_bin/infracost-linux-$(dpkg --print-architecture)" /opt/infracost_bin/infracost; \
       ln -s /opt/infracost_bin/infracost /usr/local/bin/infracost; \
-
     #### install sentry-cli
     curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
       echo "${SENTRY_HASHSUM}  sentry-cli" | sha256sum -c; \
       mv sentry-cli /usr/local/bin/sentry-cli; \
       chmod +x /usr/local/bin/sentry-cli; \
-
     #### install cosign
     curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
       dpkg -i cosign.deb; \
       rm cosign.deb; \
-
     #### install vault crd post renderer
     curl -L "${VAULT_CRD_RENDERER_URL}/vault-crd-helm-renderer.jar" -o vault-crd-helm-renderer.jar; \
       curl -L "${VAULT_CRD_RENDERER_URL}/vault-crd-helm-renderer.jar.sha1" -o vault-crd-helm-renderer.jar.sha1; \
       sha1sum vault-crd-helm-renderer.jar; \
       mkdir -p /opt/daspawnw; \
       mv vault-crd-helm-renderer.jar /opt/daspawnw/vault-crd-helm-renderer.jar; \
-
     #### install tfenv
     mkdir -p /etc/tfenv; \
      git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv; \
      chown -R jenkins /etc/tfenv; \
-
     #### install kyverno cli
-    curl -L "${KYVERNO_CLI_DOWNLOAD_URL}" -o "kyverno_cli.tar.gz"; \
-      tar xzf "kyverno_cli.tar.gz"; \
-      mv kyverno /usr/local/bin; \
+    _kyverno_cli_tmp_dir=$(mktemp -d) && cd "${_kyverno_cli_tmp_dir}"; \
+    curl -L "${KYVERNO_CLI_DOWNLOAD_URL}" -o "${_kyverno_cli_tmp_dir}/kyverno_cli.tar.gz"; \
+      tar xzf "${_kyverno_cli_tmp_dir}/kyverno_cli.tar.gz"; \
+      mv "${_kyverno_cli_tmp_dir}/kyverno" /usr/local/bin; \
       chmod +x /usr/local/bin/kyverno; \
-      rm "kyverno_cli.tar.gz" "LICENSE"; 
+      rm -rf "${_kyverno_cli_tmp_dir}"; 
 
 COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-inbound-agent/bin/check-default-namespace.sh /usr/bin/
 
