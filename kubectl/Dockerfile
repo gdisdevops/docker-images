@@ -4,6 +4,8 @@ ARG KUBECTL_VERSION=1.28.7
 
 USER root
 
+RUN apk add --no-cache bash
+
 RUN set -eux; \
     ARCH="$(uname -m)"; \
     case "${ARCH}" in \
