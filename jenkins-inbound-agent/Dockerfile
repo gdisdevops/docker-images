@@ -12,7 +12,6 @@ ARG INFRACOST_VERSION=v0.10.29
 ARG COSIGN_VERSION=2.4.1
 ARG SENTRY_CLI_VERSION=2.38.1
 ARG CHECKOV_VERSION=3.2.276
-
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
 ARG PIP_HVAC_VERSION=2.3.0
 ARG KYVERNO_CLI_VERSION=v1.12.5
@@ -20,16 +19,20 @@ ARG KYVERNO_CLI_VERSION=v1.12.5
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
 RUN set -eux; \
+    apt-get update && \
+    apt-get install -y curl ca-certificates gnupg lsb-release; \
+    install -d /usr/share/postgresql-common/pgdg; \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc; \
+    sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'; \
     apt-get update; \
     apt-get dist-upgrade -y; \
     apt-get install -y \
         git \
         apt-transport-https \
-        curl \
         init \
         openssh-server openssh-client \
         software-properties-common \
-        postgresql-client-15 \
+        postgresql-client-16 \
         unzip \
         libffi-dev \
         jq \
