@@ -19,12 +19,16 @@ ARG KYVERNO_CLI_VERSION=v1.12.5
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
 RUN set -eux; \
+    apt-get update && \
+    apt-get install -y curl ca-certificates; \
+    install -d /usr/share/postgresql-common/pgdg; \
+    sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'; \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg; \
     apt-get update; \
     apt-get dist-upgrade -y; \
     apt-get install -y \
         git \
         apt-transport-https \
-        curl \
         init \
         openssh-server openssh-client \
         software-properties-common \
