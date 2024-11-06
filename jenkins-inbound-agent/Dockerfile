@@ -12,7 +12,6 @@ ARG INFRACOST_VERSION=v0.10.29
 ARG COSIGN_VERSION=2.4.1
 ARG SENTRY_CLI_VERSION=2.38.1
 ARG CHECKOV_VERSION=3.2.276
-
 ARG VAULT_CRD_RENDERER_VERSION=1.0.7
 ARG PIP_HVAC_VERSION=2.3.0
 ARG KYVERNO_CLI_VERSION=v1.12.5
@@ -29,7 +28,7 @@ RUN set -eux; \
         init \
         openssh-server openssh-client \
         software-properties-common \
-        postgresql-client-15 \
+        postgresql-client-16 \
         unzip \
         libffi-dev \
         jq \
