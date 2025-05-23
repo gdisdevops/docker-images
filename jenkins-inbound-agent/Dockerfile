@@ -155,3 +155,15 @@ RUN helm plugin install https://github.com/databus23/helm-diff
 ENV PATH "$PATH:/etc/tfenv/bin"
 RUN tfenv install ${TERRAFORM_1_VERSION} \
       && tfenv use ${TERRAFORM_1_VERSION}
+
+# test CLIs
+RUN kubectl version && \
+    helm version && \
+    aws --version && \
+    packer version && \
+    vault version && \
+    infracost --version && \
+    cosign version && \
+    sentry-cli --version && \
+    kyverno version && \
+    checkov --version
