@@ -156,7 +156,7 @@ RUN tfenv install ${TERRAFORM_1_VERSION} \
       && tfenv use ${TERRAFORM_1_VERSION}
 
 # test CLIs
-RUN kubectl version && \
+RUN kubectl version --client && \
     helm version && \
     aws --version && \
     packer version && \
