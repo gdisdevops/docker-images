@@ -33,7 +33,7 @@ RUN set -eux; \
         init \
         openssh-server openssh-client \
         software-properties-common \
-        postgresql-client-16 \
+        postgresql-client-17 \
         unzip \
         libffi-dev \
         jq \
