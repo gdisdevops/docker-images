@@ -4,7 +4,7 @@ ARG KUBECTL_VERSION=1.32.8
 
 USER root
 
-RUN apk add --no-cache bash
+RUN apk add --no-cache sh bash
 
 RUN set -eux; \
     ARCH="$(uname -m)"; \
