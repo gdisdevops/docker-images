@@ -40,6 +40,7 @@ RUN set -eux; \
         jc \
         yq \
         xxd \
+        apt-rdepends \
         python3-pip && \
     python3 -m pip install --upgrade pip && \
     rm -rf /var/lib/apt/lists/* 
