@@ -151,9 +151,10 @@ COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-
 USER jenkins
 
     #### install nix
+ENV NIX_CONFIG='filter-syscalls = false'
 RUN curl -L https://nixos.org/nix/install -o install.sh; \
     chmod +x install.sh; \
-    sh install.sh --no-daemon --extra-conf 'filter-syscalls = false' && rm install.sh; \
+    sh install.sh --no-daemon && rm install.sh; \
     . $HOME/.nix-profile/etc/profile.d/nix.sh;
 
     #### install terraform with tfenv and helm diff
