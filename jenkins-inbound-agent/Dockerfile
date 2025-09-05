@@ -39,7 +39,6 @@ RUN set -eux; \
         jc \
         yq \
         xxd \
-        apt-rdepends \
         python3-pip && \
     python3 -m pip install --upgrade pip && \
     rm -rf /var/lib/apt/lists/* 
@@ -142,16 +141,29 @@ RUN set -eux; \
       tar xzf "${_kyverno_cli_tmp_dir}/kyverno_cli.tar.gz"; \
       mv "${_kyverno_cli_tmp_dir}/kyverno" /usr/local/bin; \
       chmod +x /usr/local/bin/kyverno; \
-      rm -rf "${_kyverno_cli_tmp_dir}"; 
+      rm -rf "${_kyverno_cli_tmp_dir}"; \
+    #### nix installation permissions
+    mkdir /nix; \
+    chown jenkins:jenkins /nix; 
 
 COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-inbound-agent/bin/check-default-namespace.sh /usr/bin/
 
 USER jenkins
-    #### install terraform with tfenv and helm diff
 
+    #### install nix
+RUN curl -L https://nixos.org/nix/install -o install.sh; \
+    chmod +x install.sh; \
+    sh install.sh --no-daemon && rm install.sh; \
+    . $HOME/.nix-profile/etc/profile.d/nix.sh;
+
+    #### install terraform with tfenv and helm diff
 RUN helm plugin install https://github.com/databus23/helm-diff
 
-ENV PATH "$PATH:/etc/tfenv/bin"
+ENV PATH "$PATH:/etc/tfenv/bin:$HOME/.nix-profile/bin:/.nix-profile/bin:/home/jenkins/.nix-profile/bin"
+ENV NIX_PROFILES "/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
+ENV NIX_SSL_CERT_FILE "/etc/ssl/certs/ca-certificates.crt"
+ENV XDG_DATA_DIRS: "$XDG_DATA_DIRS:/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
+
 RUN tfenv install ${TERRAFORM_1_VERSION} \
       && tfenv use ${TERRAFORM_1_VERSION}
 
@@ -165,4 +177,6 @@ RUN kubectl version --client && \
     cosign version && \
     sentry-cli --version && \
     kyverno version && \
-    checkov --version
+    checkov --version && \
+    ansible --version && \
+    nix --version
