@@ -160,7 +160,7 @@ RUN curl -L https://nixos.org/nix/install -o install.sh; \
     #### install terraform with tfenv and helm diff
 RUN helm plugin install https://github.com/databus23/helm-diff
 
-ENV PATH "$PATH:/etc/tfenv/bin:$HOME/.nix-profile/bin:/.nix-profile/bin:/home/jenkins/.nix-profile/bin"
+ENV PATH "/home/jenkins/.nix-profile/bin:$PATH:/etc/tfenv/bin"
 ENV NIX_PROFILES "/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
 ENV NIX_SSL_CERT_FILE "/etc/ssl/certs/ca-certificates.crt"
 ENV XDG_DATA_DIRS: "$XDG_DATA_DIRS:/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
