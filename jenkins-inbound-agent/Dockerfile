@@ -31,7 +31,6 @@ RUN set -eux; \
   apt-transport-https \
   init \
   openssh-server openssh-client \
-  software-properties-common \
   postgresql-client-17 \
   unzip \
   libffi-dev \
@@ -160,10 +159,10 @@ RUN curl -L https://nixos.org/nix/install -o install.sh; \
 #### install terraform with tfenv and helm diff
 RUN helm plugin install https://github.com/databus23/helm-diff
 
-ENV PATH "/home/jenkins/.nix-profile/bin:$PATH:/etc/tfenv/bin"
-ENV NIX_PROFILES "/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
-ENV NIX_SSL_CERT_FILE "/etc/ssl/certs/ca-certificates.crt"
-ENV XDG_DATA_DIRS: "$XDG_DATA_DIRS:/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
+ENV PATH="/home/jenkins/.nix-profile/bin:$PATH:/etc/tfenv/bin"
+ENV NIX_PROFILES="/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
+ENV NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
+ENV XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
 
 RUN tfenv install ${TERRAFORM_1_VERSION} \
   && tfenv use ${TERRAFORM_1_VERSION}
