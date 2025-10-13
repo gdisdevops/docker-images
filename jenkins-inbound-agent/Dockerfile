@@ -1,4 +1,4 @@
-FROM jenkins/inbound-agent:3327.v868139a_d00e0-8-jdk21
+FROM jenkins/inbound-agent:alpine-jdk21
 
 USER root
 
@@ -18,59 +18,64 @@ ARG KYVERNO_CLI_VERSION=v1.14.2
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
+ENV NIXPKGS_ALLOW_UNFREE=1
+
+RUN mkdir -p /etc/nix && echo "sandbox = false" >> /etc/nix/nix.conf
+RUN echo "filter-syscalls = false" >> /etc/nix/nix.conf
+
 RUN set -eux; \
-  apt-get update && \
-  apt-get install -y curl ca-certificates gnupg lsb-release; \
-  install -d /usr/share/postgresql-common/pgdg; \
-  curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc; \
-  sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'; \
-  apt-get update; \
-  apt-get dist-upgrade -y; \
-  apt-get install -y \
+  apk update && \
+  apk add --no-cache \
+  curl \
+  ca-certificates \
+  gnupg \
+  openssh \
   git \
-  apt-transport-https \
-  init \
-  openssh-server openssh-client \
-  software-properties-common \
-  postgresql-client-17 \
   unzip \
   libffi-dev \
   jq \
-  jc \
   yq \
   xxd \
-  python3-pip && \
-  python3 -m pip install --upgrade pip && \
-  rm -rf /var/lib/apt/lists/* 
+  xz \
+  python3 \
+  py3-pip \
+  aws-cli \
+  gcompat \
+  bash \
+  nix; \
+  # Optional: Add PostgreSQL client if available in Alpine repos
+  apk add --no-cache postgresql-client; \
+  # Clean up
+  rm -rf /var/cache/apk/*
 
 RUN set -eux; \
-  ARCH="$(dpkg --print-architecture)"; \
+  ARCH="$(uname -m)"; \
   case "${ARCH}" in \
-  aarch64|arm64) \
-  AWS_CLI_DOWNLOAD_URL="https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"; \
+  aarch64) \
   VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_arm64.zip"; \
   PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_arm64.zip"; \
   KUBECTL_DOWNLOAD_URL="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/arm64/kubectl"; \
   HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-arm64.tar.gz"; \
   HELM_FOLDER="linux-arm64"; \
   INFRACOST_DOWNLOAD_FILE="infracost-linux-arm64"; \
+  INFRACOST_ARCH="arm64"; \
   INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
-  COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_arm64.deb"; \
+  COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-arm64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
   SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-aarch64".checksums."sha256-hex"');\
   VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
   KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_arm64.tar.gz" \
   ;; \
-  amd64|x86_64) \
-  AWS_CLI_DOWNLOAD_URL="https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
+  x86_64) \
   VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip"; \
   PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"; \
   KUBECTL_DOWNLOAD_URL="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"; \
   HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"; \
   HELM_FOLDER="linux-amd64"; \
   INFRACOST_DOWNLOAD_FILE="infracost-linux-amd64"; \
+  INFRACOST_ARCH="amd64"; \
   INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
-  COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign_${COSIGN_VERSION}_amd64.deb"; \
+  COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
   SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-x86_64".checksums."sha256-hex"');\
   VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
@@ -81,13 +86,8 @@ RUN set -eux; \
   exit 1; \
   ;; \
   esac; \
-  #### install aws cli
-  _aws_cli_tmp_dir=$(mktemp -d) && cd "${_aws_cli_tmp_dir}"; \
-  curl "${AWS_CLI_DOWNLOAD_URL}" -o "${_aws_cli_tmp_dir}/awscliv2.zip"; \
-  unzip "${_aws_cli_tmp_dir}/awscliv2.zip" && ./aws/install && cd ; \
-  rm -rf "${_aws_cli_tmp_dir}"; \
   #### install boto3, checov, ansible, hvac and pre-commit
-  pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} ansible==${ANSIBLE_VERSION} hvac==${PIP_HVAC_VERSION} pre-commit; \
+  pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} ansible==${ANSIBLE_VERSION} hvac==${PIP_HVAC_VERSION} pre-commit jc; \
   #### install vault
   _vault_tmp_dir=$(mktemp -d) && cd "${_vault_tmp_dir}"; \
   curl -L "${VAULT_DOWNLOAD_URL}" -o "${_vault_tmp_dir}/vault.zip"; \
@@ -113,8 +113,13 @@ RUN set -eux; \
   mkdir /opt/infracost_bin; \
   tar xf "${INFRACOST_DOWNLOAD_FILE}.tar.gz" -C /opt/infracost_bin/; \
   rm "${INFRACOST_DOWNLOAD_FILE}.tar.gz" "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  chmod +x "/opt/infracost_bin/infracost-linux-$(dpkg --print-architecture)"; \
-  mv "/opt/infracost_bin/infracost-linux-$(dpkg --print-architecture)" /opt/infracost_bin/infracost; \
+  case "$(uname -m)" in \
+  x86_64) arch="amd64" ;; \
+  aarch64) arch="arm64" ;; \
+  *) echo "Unsupported architecture: $(uname -m)" && exit 1 ;; \
+  esac; \
+  chmod +x "/opt/infracost_bin/infracost-linux-${arch}"; \
+  mv "/opt/infracost_bin/infracost-linux-${arch}" /opt/infracost_bin/infracost; \
   ln -s /opt/infracost_bin/infracost /usr/local/bin/infracost; \
   #### install sentry-cli
   curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
@@ -122,9 +127,9 @@ RUN set -eux; \
   mv sentry-cli /usr/local/bin/sentry-cli; \
   chmod +x /usr/local/bin/sentry-cli; \
   #### install cosign
-  curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign.deb; \
-  dpkg -i cosign.deb; \
-  rm cosign.deb; \
+  curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign; \
+  chmod +x cosign; \
+  mv cosign /usr/bin/cosign; \
   #### install vault crd post renderer
   curl -L "${VAULT_CRD_RENDERER_URL}/vault-crd-helm-renderer.jar" -o vault-crd-helm-renderer.jar; \
   curl -L "${VAULT_CRD_RENDERER_URL}/vault-crd-helm-renderer.jar.sha1" -o vault-crd-helm-renderer.jar.sha1; \
@@ -150,20 +155,13 @@ COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-
 
 USER jenkins
 
-#### install nix
-ENV NIX_CONFIG='filter-syscalls = false'
-RUN curl -L https://nixos.org/nix/install -o install.sh; \
-  chmod +x install.sh; \
-  sh install.sh --no-daemon && rm install.sh; \
-  . $HOME/.nix-profile/etc/profile.d/nix.sh;
-
 #### install terraform with tfenv and helm diff
 RUN helm plugin install https://github.com/databus23/helm-diff
 
-ENV PATH "/home/jenkins/.nix-profile/bin:$PATH:/etc/tfenv/bin"
-ENV NIX_PROFILES "/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
-ENV NIX_SSL_CERT_FILE "/etc/ssl/certs/ca-certificates.crt"
-ENV XDG_DATA_DIRS: "$XDG_DATA_DIRS:/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
+ENV PATH="/home/jenkins/.nix-profile/bin:$PATH:/etc/tfenv/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ENV NIX_PROFILES="/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
+ENV NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
+ENV XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
 
 RUN tfenv install ${TERRAFORM_1_VERSION} \
   && tfenv use ${TERRAFORM_1_VERSION}
@@ -171,7 +169,6 @@ RUN tfenv install ${TERRAFORM_1_VERSION} \
 # test CLIs
 RUN kubectl version --client && \
   helm version && \
-  aws --version && \
   packer version && \
   vault version && \
   infracost --version && \
@@ -180,4 +177,5 @@ RUN kubectl version --client && \
   kyverno version && \
   checkov --version && \
   ansible --version && \
-  nix --version
+  nix --version && \
+  aws --version
