@@ -40,6 +40,8 @@ RUN set -eux; \
   python3 \
   py3-pip \
   aws-cli \
+  gcompat \
+  bash \
   nix; \
   # Optional: Add PostgreSQL client if available in Alpine repos
   apk add --no-cache postgresql-client; \
