@@ -42,6 +42,7 @@ RUN set -eux; \
   aws-cli \
   gcompat \
   bash \
+  findutils \
   nix; \
   # Optional: Add PostgreSQL client if available in Alpine repos
   apk add --no-cache postgresql-client; \
