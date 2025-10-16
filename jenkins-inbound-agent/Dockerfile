@@ -43,6 +43,7 @@ RUN set -eux; \
   gcompat \
   bash \
   findutils \
+  coreutils \
   nix; \
   # Optional: Add PostgreSQL client if available in Alpine repos
   apk add --no-cache postgresql-client; \
