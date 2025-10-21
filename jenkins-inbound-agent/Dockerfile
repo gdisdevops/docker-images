@@ -32,6 +32,7 @@ RUN set -eux; \
   openssh \
   git \
   unzip \
+  tar \
   libffi-dev \
   jq \
   yq \
