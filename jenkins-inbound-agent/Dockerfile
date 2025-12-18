@@ -151,8 +151,8 @@ RUN set -eux; \
   chmod +x /usr/local/bin/kyverno; \
   rm -rf "${_kyverno_cli_tmp_dir}"; \
   #### nix installation permissions
-  mkdir /nix; \
-  chown jenkins:jenkins /nix; 
+  mkdir -p /nix/var/nix/profiles /nix/var/nix/gcroots /nix/var/nix/db; \
+  chown -R jenkins:jenkins /nix; 
 
 COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-inbound-agent/bin/check-default-namespace.sh /usr/bin/
 
@@ -165,6 +165,9 @@ ENV PATH="/home/jenkins/.nix-profile/bin:$PATH:/etc/tfenv/bin:/usr/local/bin:/us
 ENV NIX_PROFILES="/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
 ENV NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
 ENV XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
+
+RUN nix-channel --add https://nixos.org/channels/nixos-25.11 nixpkgs && \
+    nix-channel --update
 
 RUN tfenv install ${TERRAFORM_1_VERSION} \
   && tfenv use ${TERRAFORM_1_VERSION}
