@@ -169,9 +169,6 @@ ENV XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/jenkins/.nix-profile/share:/nix/var/nix/
 RUN tfenv install ${TERRAFORM_1_VERSION} \
   && tfenv use ${TERRAFORM_1_VERSION}
 
-RUN nix-channel --add https://nixos.org/channels/nixos-25.11 nixpkgs && \
-    nix-channel --update
-    
 # test CLIs
 RUN kubectl version --client && \
   helm version && \
