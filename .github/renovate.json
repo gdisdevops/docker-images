@@ -17,6 +17,27 @@
     ],
     "packageRules": [
         {
+            "matchPackagePatterns": [
+                "*"
+            ],
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "groupName": "major dependency updates",
+            "groupSlug": "major"
+        },
+        {
+            "matchPackagePatterns": [
+                "*"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ],
+            "groupName": "minor and patch dependency updates",
+            "groupSlug": "non-major"
+        },
+        {
             "matchDatasources": [
                 "pypi"
             ],
