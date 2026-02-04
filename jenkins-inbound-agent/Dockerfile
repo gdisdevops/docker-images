@@ -176,9 +176,9 @@ RUN nix-channel --add https://nixos.org/channels/${NIXOS_CHANNEL} nixpkgs && \
     nix-channel --update
 
 #### install terraform with tenv
-ENV PATH="/home/jenkins/.tenv/Terraform/${TERRAFORM_1_VERSION}:$PATH"
 RUN tenv tf install ${TERRAFORM_1_VERSION} \
   && tenv tf use ${TERRAFORM_1_VERSION}
+ENV PATH="/home/jenkins/.tenv/Terraform/${TERRAFORM_1_VERSION}:$PATH"
 
 #### test CLIs
 RUN kubectl version --client && \
