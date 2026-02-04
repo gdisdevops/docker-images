@@ -6,15 +6,17 @@ ARG VAULT_VERSION=1.21.2
 ARG PACKER_VERSION=1.14.3
 ARG TERRAFORM_1_VERSION=1.14.3
 ARG KUBECTL_VERSION=1.33.6
-ARG HELM_VERSION=v3.19.2
+ARG HELM_VERSION=3.19.2
 ARG ANSIBLE_VERSION=11.12.0
-ARG INFRACOST_VERSION=v0.10.40
+ARG INFRACOST_VERSION=0.10.40
 ARG COSIGN_VERSION=2.6.2
 ARG SENTRY_CLI_VERSION=2.58.4
 ARG CHECKOV_VERSION=3.2.497
 ARG VAULT_CRD_RENDERER_VERSION=1.0.8
 ARG PIP_HVAC_VERSION=2.4.0
-ARG KYVERNO_CLI_VERSION=v1.15.2
+ARG KYVERNO_CLI_VERSION=1.15.2
+ARG NIXOS_CHANNEL=nixos-25.11
+ARG TENV_VERSION=4.9.1
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
@@ -58,31 +60,33 @@ RUN set -eux; \
   VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_arm64.zip"; \
   PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_arm64.zip"; \
   KUBECTL_DOWNLOAD_URL="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/arm64/kubectl"; \
-  HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-arm64.tar.gz"; \
+  HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-arm64.tar.gz"; \
   HELM_FOLDER="linux-arm64"; \
   INFRACOST_DOWNLOAD_FILE="infracost-linux-arm64"; \
   INFRACOST_ARCH="arm64"; \
-  INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
+  INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/v${INFRACOST_VERSION}"; \
   COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-arm64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
   SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-aarch64".checksums."sha256-hex"');\
   VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
-  KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_arm64.tar.gz" \
+  KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/v${KYVERNO_CLI_VERSION}/kyverno-cli_v${KYVERNO_CLI_VERSION}_linux_arm64.tar.gz"; \
+  TENV_DOWNLOAD_URL="https://github.com/tofuutils/tenv/releases/download/v${TENV_VERSION}/tenv_v${TENV_VERSION}_Linux_arm64.tar.gz" \
   ;; \
   x86_64) \
   VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip"; \
   PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"; \
   KUBECTL_DOWNLOAD_URL="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"; \
-  HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"; \
+  HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"; \
   HELM_FOLDER="linux-amd64"; \
   INFRACOST_DOWNLOAD_FILE="infracost-linux-amd64"; \
   INFRACOST_ARCH="amd64"; \
-  INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
+  INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/v${INFRACOST_VERSION}"; \
   COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
   SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-x86_64".checksums."sha256-hex"');\
   VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
-  KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_x86_64.tar.gz" \
+  KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/v${KYVERNO_CLI_VERSION}/kyverno-cli_v${KYVERNO_CLI_VERSION}_linux_x86_64.tar.gz"; \
+  TENV_DOWNLOAD_URL="https://github.com/tofuutils/tenv/releases/download/v${TENV_VERSION}/tenv_v${TENV_VERSION}_Linux_x86_64.tar.gz" \
   ;; \
   *) \
   echo "Unsupported arch: ${ARCH}"; \
@@ -139,10 +143,11 @@ RUN set -eux; \
   sha1sum vault-crd-helm-renderer.jar; \
   mkdir -p /opt/daspawnw; \
   mv vault-crd-helm-renderer.jar /opt/daspawnw/vault-crd-helm-renderer.jar; \
-  #### install tfenv
-  mkdir -p /etc/tfenv; \
-  git clone --depth 1 https://github.com/tfutils/tfenv.git /etc/tfenv; \
-  chown -R jenkins /etc/tfenv; \
+  #### install tenv
+  _tenv_tmp_dir=$(mktemp -d) && cd "${_tenv_tmp_dir}"; \
+  curl -L "${TENV_DOWNLOAD_URL}" -o "tenv.tar.gz"; \
+  tar -xvzf "tenv.tar.gz" && chmod +x "tenv" && mv "tenv" /usr/bin; \
+  cd && rm -rf "${_tenv_tmp_dir}"; \
   #### install kyverno cli
   _kyverno_cli_tmp_dir=$(mktemp -d) && cd "${_kyverno_cli_tmp_dir}"; \
   curl -L "${KYVERNO_CLI_DOWNLOAD_URL}" -o "${_kyverno_cli_tmp_dir}/kyverno_cli.tar.gz"; \
@@ -152,25 +157,27 @@ RUN set -eux; \
   rm -rf "${_kyverno_cli_tmp_dir}"; \
   #### nix installation permissions
   mkdir -p /nix/var/nix/profiles /nix/var/nix/gcroots /nix/var/nix/db; \
-  chown -R jenkins:jenkins /nix; 
+  chown -R jenkins:jenkins /nix;
 
 COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-inbound-agent/bin/check-default-namespace.sh /usr/bin/
 
 USER jenkins
 
-#### install terraform with tfenv and helm diff
+#### install helm diff
 RUN helm plugin install https://github.com/databus23/helm-diff
 
-ENV PATH="/home/jenkins/.nix-profile/bin:$PATH:/etc/tfenv/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+#### nix setup
+ENV PATH="/home/jenkins/.nix-profile/bin:$PATH:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ENV NIX_PROFILES="/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
 ENV NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
-ENV XDG_DATA_DIRS="$XDG_DATA_DIRS:/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
+ENV XDG_DATA_DIRS="/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
 
-RUN nix-channel --add https://nixos.org/channels/nixos-25.11 nixpkgs && \
+RUN nix-channel --add https://nixos.org/channels/${NIXOS_CHANNEL} nixpkgs && \
     nix-channel --update
 
-RUN tfenv install ${TERRAFORM_1_VERSION} \
-  && tfenv use ${TERRAFORM_1_VERSION}
+#### install terraform with tenv
+RUN tenv tf install ${TERRAFORM_1_VERSION} \
+  && tenv tf use ${TERRAFORM_1_VERSION}
 
 # test CLIs
 RUN kubectl version --client && \
@@ -184,4 +191,5 @@ RUN kubectl version --client && \
   checkov --version && \
   ansible --version && \
   nix --version && \
-  aws --version
+  aws --version && \
+  tenv --version
