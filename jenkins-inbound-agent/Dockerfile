@@ -167,7 +167,7 @@ USER jenkins
 RUN helm plugin install https://github.com/databus23/helm-diff
 
 #### nix setup
-ENV PATH="/home/jenkins/.nix-profile/bin:$PATH:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ENV PATH="/home/jenkins/.nix-profile/bin:$PATH"
 ENV NIX_PROFILES="/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
 ENV NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
 ENV XDG_DATA_DIRS="/home/jenkins/.nix-profile/share:/nix/var/nix/profiles/default/share"
@@ -178,8 +178,9 @@ RUN nix-channel --add https://nixos.org/channels/${NIXOS_CHANNEL} nixpkgs && \
 #### install terraform with tenv
 RUN tenv tf install ${TERRAFORM_1_VERSION} \
   && tenv tf use ${TERRAFORM_1_VERSION}
+ENV PATH="/home/jenkins/.tenv/Terraform/${TERRAFORM_1_VERSION}:$PATH"
 
-# test CLIs
+#### test CLIs
 RUN kubectl version --client && \
   helm version && \
   packer version && \
@@ -192,4 +193,5 @@ RUN kubectl version --client && \
   ansible --version && \
   nix --version && \
   aws --version && \
-  tenv --version
+  tenv --version && \
+  terraform -version
