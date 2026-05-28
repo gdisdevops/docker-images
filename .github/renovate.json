@@ -55,10 +55,13 @@
             "matchPackageNames": [
                 "helm/helm",
                 "open-policy-agent/conftest",
-                "infracost/infracost",
                 "sigstore/cosign",
                 "getsentry/sentry-cli",
-                "DaspawnW/vault-crd-helm-renderer"
+                "DaspawnW/vault-crd-helm-renderer",
+                "kyverno/kyverno",
+                "c3xdev/c3x",
+                "kubernetes/kubernetes",
+                "tofuutils/tenv"
             ],
             "versioning": "semver"
         },
@@ -114,7 +117,7 @@
                 ".*\\/Dockerfile"
             ],
             "matchStrings": [
-                ".*\\sHELM_VERSION=(?<currentValue>v\\d.*\\.?)"
+                ".*\\sHELM_VERSION=(?<currentValue>\\d.*\\.?)"
             ],
             "depNameTemplate": "helm/helm",
             "datasourceTemplate": "github-releases",
@@ -140,18 +143,6 @@
                 ".*\\sCONFTEST_VERSION=(?<currentValue>\\d.*\\.?)"
             ],
             "depNameTemplate": "open-policy-agent/conftest",
-            "datasourceTemplate": "github-releases",
-            "extractVersionTemplate": "^v(?<version>.*)$"
-        },
-        {
-            "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sINFRACOST_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
-            "depNameTemplate": "infracost/infracost",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
@@ -208,10 +199,58 @@
                 ".*\\/Dockerfile"
             ],
             "matchStrings": [
+                ".*\\sKYVERNO_CLI_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
+            "depNameTemplate": "kyverno/kyverno",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^v(?<version>.*)$"
+        },
+        {
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sC3X_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
+            "depNameTemplate": "c3xdev/c3x",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^v(?<version>.*)$"
+        },
+        {
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
                 ".*\\sPIP_HVAC_VERSION=(?<currentValue>\\d.*\\.?)"
             ],
             "depNameTemplate": "hvac",
             "datasourceTemplate": "pypi"
+        },
+        {
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sKUBECTL_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
+            "depNameTemplate": "kubernetes/kubernetes",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^v(?<version>.*)$"
+        },
+        {
+            "customType": "regex",
+            "fileMatch": [
+                ".*\\/Dockerfile"
+            ],
+            "matchStrings": [
+                ".*\\sTENV_VERSION=(?<currentValue>\\d.*\\.?)"
+            ],
+            "depNameTemplate": "tofuutils/tenv",
+            "datasourceTemplate": "github-releases",
+            "extractVersionTemplate": "^v(?<version>.*)$"
         }
     ]
 }

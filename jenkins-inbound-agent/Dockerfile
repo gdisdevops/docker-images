@@ -6,15 +6,15 @@ ARG VAULT_VERSION=1.21.2
 ARG PACKER_VERSION=1.15.3
 ARG TERRAFORM_1_VERSION=1.15.3
 ARG KUBECTL_VERSION=1.34.6
-ARG HELM_VERSION=v3.21.0
+ARG HELM_VERSION=3.21.0
 ARG ANSIBLE_VERSION=11.12.0
-ARG INFRACOST_VERSION=v0.10.40
+ARG C3X_VERSION=1.0.1
 ARG COSIGN_VERSION=2.6.2
 ARG SENTRY_CLI_VERSION=2.58.4
 ARG CHECKOV_VERSION=3.2.528
 ARG VAULT_CRD_RENDERER_VERSION=1.0.8
 ARG PIP_HVAC_VERSION=2.4.0
-ARG KYVERNO_CLI_VERSION=v1.17.2
+ARG KYVERNO_CLI_VERSION=1.17.2
 ARG NIXOS_CHANNEL=nixos-25.11
 ARG TENV_VERSION=4.12.2
 
@@ -54,38 +54,32 @@ RUN set -eux; \
   rm -rf /var/cache/apk/*
 
 RUN set -eux; \
-  ARCH="$(uname -m)"; \
+  ARCH="$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')"; \
   case "${ARCH}" in \
-  aarch64) \
+  arm64) \
   VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_arm64.zip"; \
   PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_arm64.zip"; \
   KUBECTL_DOWNLOAD_URL="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/arm64/kubectl"; \
-  HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-arm64.tar.gz"; \
-  HELM_FOLDER="linux-arm64"; \
-  INFRACOST_DOWNLOAD_FILE="infracost-linux-arm64"; \
-  INFRACOST_ARCH="arm64"; \
-  INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
+  HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-arm64.tar.gz"; \
+  C3X_DOWNLOAD_URL="https://github.com/c3xdev/c3x/releases/download/v${C3X_VERSION}"; \
   COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-arm64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
   SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-aarch64".checksums."sha256-hex"');\
   VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
-  KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_arm64.tar.gz"; \
+  KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/v${KYVERNO_CLI_VERSION}/kyverno-cli_v${KYVERNO_CLI_VERSION}_linux_arm64.tar.gz"; \
   TENV_DOWNLOAD_URL="https://github.com/tofuutils/tenv/releases/download/v${TENV_VERSION}/tenv_v${TENV_VERSION}_Linux_arm64.tar.gz" \
   ;; \
-  x86_64) \
+  amd64) \
   VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip"; \
   PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"; \
   KUBECTL_DOWNLOAD_URL="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"; \
-  HELM_DOWNLOAD_URL="https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"; \
-  HELM_FOLDER="linux-amd64"; \
-  INFRACOST_DOWNLOAD_FILE="infracost-linux-amd64"; \
-  INFRACOST_ARCH="amd64"; \
-  INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/${INFRACOST_VERSION}"; \
+  HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"; \
+  C3X_DOWNLOAD_URL="https://github.com/c3xdev/c3x/releases/download/v${C3X_VERSION}"; \
   COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
   SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-x86_64".checksums."sha256-hex"');\
   VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
-  KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/${KYVERNO_CLI_VERSION}/kyverno-cli_${KYVERNO_CLI_VERSION}_linux_x86_64.tar.gz"; \
+  KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/v${KYVERNO_CLI_VERSION}/kyverno-cli_v${KYVERNO_CLI_VERSION}_linux_x86_64.tar.gz" \
   TENV_DOWNLOAD_URL="https://github.com/tofuutils/tenv/releases/download/v${TENV_VERSION}/tenv_v${TENV_VERSION}_Linux_x86_64.tar.gz" \
   ;; \
   *) \
@@ -93,7 +87,7 @@ RUN set -eux; \
   exit 1; \
   ;; \
   esac; \
-  #### install boto3, checov, ansible, hvac and pre-commit
+  #### install boto3, checkov, ansible, hvac and pre-commit
   pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} ansible==${ANSIBLE_VERSION} hvac==${PIP_HVAC_VERSION} pre-commit jc; \
   #### install vault
   _vault_tmp_dir=$(mktemp -d) && cd "${_vault_tmp_dir}"; \
@@ -109,25 +103,22 @@ RUN set -eux; \
   curl -L "${KUBECTL_DOWNLOAD_URL}" -o "kubectl"; \
   chmod +x kubectl && mv kubectl /usr/bin; \
   #### install helm
+  HELM_FOLDER="linux-${ARCH}"; \
   _helm_tmp_dir=$(mktemp -d) && cd "${_helm_tmp_dir}"; \
   curl -L "${HELM_DOWNLOAD_URL}" -o "${_helm_tmp_dir}/helm.tar.gz"; \
   tar -xvzf "${_helm_tmp_dir}/helm.tar.gz" && chmod +x "${_helm_tmp_dir}/${HELM_FOLDER}/helm" && mv "${_helm_tmp_dir}/${HELM_FOLDER}/helm" /usr/bin; \
   cd && rm -rf "${_helm_tmp_dir}"; \
-  #### install infracost
-  curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz"; \
-  curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  sha256sum -c "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  mkdir /opt/infracost_bin; \
-  tar xf "${INFRACOST_DOWNLOAD_FILE}.tar.gz" -C /opt/infracost_bin/; \
-  rm "${INFRACOST_DOWNLOAD_FILE}.tar.gz" "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  case "$(uname -m)" in \
-  x86_64) arch="amd64" ;; \
-  aarch64) arch="arm64" ;; \
-  *) echo "Unsupported architecture: $(uname -m)" && exit 1 ;; \
-  esac; \
-  chmod +x "/opt/infracost_bin/infracost-linux-${arch}"; \
-  mv "/opt/infracost_bin/infracost-linux-${arch}" /opt/infracost_bin/infracost; \
-  ln -s /opt/infracost_bin/infracost /usr/local/bin/infracost; \
+  #### install c3x
+  C3X_DOWNLOAD_FILE="c3x-linux-${ARCH}"; \
+  curl -L "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz" -o "${C3X_DOWNLOAD_FILE}.tar.gz"; \
+  curl -L "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz.sha256" -o "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  sha256sum -c "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  mkdir /opt/c3x_bin; \
+  tar xf "${C3X_DOWNLOAD_FILE}.tar.gz" -C /opt/c3x_bin/; \
+  rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  chmod +x "/opt/c3x_bin/${C3X_DOWNLOAD_FILE}"; \
+  mv "/opt/c3x_bin/${C3X_DOWNLOAD_FILE}" /opt/c3x_bin/c3x; \
+  ln -s /opt/c3x_bin/c3x /usr/local/bin/c3x; \
   #### install sentry-cli
   curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
   echo "${SENTRY_HASHSUM}  sentry-cli" | sha256sum -c; \
@@ -185,7 +176,7 @@ RUN kubectl version --client && \
   helm version && \
   packer version && \
   vault version && \
-  infracost --version && \
+  c3x --version && \
   cosign version && \
   sentry-cli --version && \
   kyverno version && \
