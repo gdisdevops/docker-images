@@ -11,7 +11,6 @@ Jenkins JNLP images with additional tooling.
 | kubectl | `1.34.6` |
 | Helm | `3.21.0` |
 | Ansible | `11.12.0` |
-| Infracost | `0.10.40` |
 | C3X | `1.0.1` |
 | Cosign | `2.6.2` |
 | Sentry CLI | `2.58.4` |

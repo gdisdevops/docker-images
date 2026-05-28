@@ -8,7 +8,6 @@ ARG TERRAFORM_1_VERSION=1.15.3
 ARG KUBECTL_VERSION=1.34.6
 ARG HELM_VERSION=3.21.0
 ARG ANSIBLE_VERSION=11.12.0
-ARG INFRACOST_VERSION=0.10.40
 ARG C3X_VERSION=1.0.1
 ARG COSIGN_VERSION=2.6.2
 ARG SENTRY_CLI_VERSION=2.58.4
@@ -62,7 +61,6 @@ RUN set -eux; \
   PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_arm64.zip"; \
   KUBECTL_DOWNLOAD_URL="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/arm64/kubectl"; \
   HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-arm64.tar.gz"; \
-  INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/v${INFRACOST_VERSION}"; \
   C3X_DOWNLOAD_URL="https://github.com/c3xdev/c3x/releases/download/v${C3X_VERSION}"; \
   COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-arm64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
@@ -76,7 +74,6 @@ RUN set -eux; \
   PACKER_DOWNLOAD_URL="https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"; \
   KUBECTL_DOWNLOAD_URL="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl"; \
   HELM_DOWNLOAD_URL="https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"; \
-  INFRACOST_DOWNLOAD_URL="https://github.com/infracost/infracost/releases/download/v${INFRACOST_VERSION}"; \
   C3X_DOWNLOAD_URL="https://github.com/c3xdev/c3x/releases/download/v${C3X_VERSION}"; \
   COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
@@ -111,17 +108,6 @@ RUN set -eux; \
   curl -L "${HELM_DOWNLOAD_URL}" -o "${_helm_tmp_dir}/helm.tar.gz"; \
   tar -xvzf "${_helm_tmp_dir}/helm.tar.gz" && chmod +x "${_helm_tmp_dir}/${HELM_FOLDER}/helm" && mv "${_helm_tmp_dir}/${HELM_FOLDER}/helm" /usr/bin; \
   cd && rm -rf "${_helm_tmp_dir}"; \
-  #### install infracost
-  INFRACOST_DOWNLOAD_FILE="infracost-linux-${ARCH}"; \
-  curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz"; \
-  curl -L "${INFRACOST_DOWNLOAD_URL}/${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256" -o "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  sha256sum -c "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  mkdir /opt/infracost_bin; \
-  tar xf "${INFRACOST_DOWNLOAD_FILE}.tar.gz" -C /opt/infracost_bin/; \
-  rm "${INFRACOST_DOWNLOAD_FILE}.tar.gz" "${INFRACOST_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  chmod +x "/opt/infracost_bin/${INFRACOST_DOWNLOAD_FILE}"; \
-  mv "/opt/infracost_bin/${INFRACOST_DOWNLOAD_FILE}" /opt/infracost_bin/infracost; \
-  ln -s /opt/infracost_bin/infracost /usr/local/bin/infracost; \
   #### install c3x
   C3X_DOWNLOAD_FILE="c3x-linux-${ARCH}"; \
   curl -L "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz" -o "${C3X_DOWNLOAD_FILE}.tar.gz"; \
@@ -190,7 +176,6 @@ RUN kubectl version --client && \
   helm version && \
   packer version && \
   vault version && \
-  infracost --version && \
   c3x --version && \
   cosign version && \
   sentry-cli --version && \

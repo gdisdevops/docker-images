@@ -55,7 +55,6 @@
             "matchPackageNames": [
                 "helm/helm",
                 "open-policy-agent/conftest",
-                "infracost/infracost",
                 "sigstore/cosign",
                 "getsentry/sentry-cli",
                 "DaspawnW/vault-crd-helm-renderer",
@@ -144,18 +143,6 @@
                 ".*\\sCONFTEST_VERSION=(?<currentValue>\\d.*\\.?)"
             ],
             "depNameTemplate": "open-policy-agent/conftest",
-            "datasourceTemplate": "github-releases",
-            "extractVersionTemplate": "^v(?<version>.*)$"
-        },
-        {
-            "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sINFRACOST_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
-            "depNameTemplate": "infracost/infracost",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
