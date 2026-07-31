@@ -116,8 +116,7 @@ RUN set -eux; \
   mkdir /opt/c3x_bin; \
   tar xf "${C3X_DOWNLOAD_FILE}.tar.gz" -C /opt/c3x_bin/; \
   rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  chmod +x "/opt/c3x_bin/${C3X_DOWNLOAD_FILE}"; \
-  mv "/opt/c3x_bin/${C3X_DOWNLOAD_FILE}" /opt/c3x_bin/c3x; \
+  chmod +x "/opt/c3x_bin/c3x"; \
   ln -s /opt/c3x_bin/c3x /usr/local/bin/c3x; \
   #### install sentry-cli
   curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
