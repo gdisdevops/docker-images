@@ -109,10 +109,10 @@ RUN set -eux; \
   tar -xvzf "${_helm_tmp_dir}/helm.tar.gz" && chmod +x "${_helm_tmp_dir}/${HELM_FOLDER}/helm" && mv "${_helm_tmp_dir}/${HELM_FOLDER}/helm" /usr/bin; \
   cd && rm -rf "${_helm_tmp_dir}"; \
   #### install c3x
-  C3X_DOWNLOAD_FILE="c3x-linux-${ARCH}"; \
-  curl -L "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz" -o "${C3X_DOWNLOAD_FILE}.tar.gz"; \
-  curl -L "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz.sha256" -o "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  sha256sum -c "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  C3X_DOWNLOAD_FILE="c3x_${C3X_VERSION}_linux_${ARCH}"; \
+  curl -L -f "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz" -o "${C3X_DOWNLOAD_FILE}.tar.gz"; \
+  curl -L -f "${C3X_DOWNLOAD_URL}/checksums.txt" -o "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  sha256sum --ignore-missing -c "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
   mkdir /opt/c3x_bin; \
   tar xf "${C3X_DOWNLOAD_FILE}.tar.gz" -C /opt/c3x_bin/; \
   rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
