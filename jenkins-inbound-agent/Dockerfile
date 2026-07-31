@@ -1,3 +1,6 @@
+## FIXME: workaround for c3x breaking changes in CLI
+FROM ghcr.io/gdisdevops/docker-images/jenkins-inbound-agent:v4.3.0 AS c3x-legacy
+
 FROM jenkins/inbound-agent:alpine-jdk21
 
 USER root
@@ -117,7 +120,7 @@ RUN set -eux; \
   tar xf "${C3X_DOWNLOAD_FILE}.tar.gz" -C /opt/c3x_bin/; \
   rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
   chmod +x "/opt/c3x_bin/c3x"; \
-  ln -s /opt/c3x_bin/c3x /usr/local/bin/c3x; \
+  # ln -s /opt/c3x_bin/c3x /usr/local/bin/c3x; \ # FIXME: workaround for c3x breaking changes in CLI
   #### install sentry-cli
   curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
   echo "${SENTRY_HASHSUM}  sentry-cli" | sha256sum -c; \
@@ -150,6 +153,10 @@ RUN set -eux; \
   chown -R jenkins:jenkins /nix;
 
 COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-inbound-agent/bin/check-default-namespace.sh /usr/bin/
+
+## FIXME: workaround for c3x breaking changes in CLI
+COPY --from=c3x-legacy /opt/c3x_bin/c3x /opt/c3x_bin/c3x-legacy
+RUN ln -s /opt/c3x_bin/c3x-legacy /usr/local/bin/c3x
 
 USER jenkins
 
