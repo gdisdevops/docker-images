@@ -112,15 +112,16 @@ RUN set -eux; \
   tar -xvzf "${_helm_tmp_dir}/helm.tar.gz" && chmod +x "${_helm_tmp_dir}/${HELM_FOLDER}/helm" && mv "${_helm_tmp_dir}/${HELM_FOLDER}/helm" /usr/bin; \
   cd && rm -rf "${_helm_tmp_dir}"; \
   #### install c3x
-  C3X_DOWNLOAD_FILE="c3x_${C3X_VERSION}_linux_${ARCH}"; \
-  curl -L -f "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz" -o "${C3X_DOWNLOAD_FILE}.tar.gz"; \
-  curl -L -f "${C3X_DOWNLOAD_URL}/checksums.txt" -o "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  sha256sum --ignore-missing -c "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  # C3X_DOWNLOAD_FILE="c3x_${C3X_VERSION}_linux_${ARCH}"; \
+  # curl -L -f "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz" -o "${C3X_DOWNLOAD_FILE}.tar.gz"; \
+  # curl -L -f "${C3X_DOWNLOAD_URL}/checksums.txt" -o "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  # sha256sum --ignore-missing -c "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
   mkdir /opt/c3x_bin; \
-  tar xf "${C3X_DOWNLOAD_FILE}.tar.gz" -C /opt/c3x_bin/; \
-  rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  chmod +x "/opt/c3x_bin/c3x"; \
-  # ln -s /opt/c3x_bin/c3x /usr/local/bin/c3x; \ # FIXME: workaround for c3x breaking changes in CLI
+  # FIXME: workaround for c3x breaking changes in CLI
+  # tar xf "${C3X_DOWNLOAD_FILE}.tar.gz" -C /opt/c3x_bin/; \
+  #rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  # chmod +x "/opt/c3x_bin/c3x"; \
+  # ln -s /opt/c3x_bin/c3x /usr/local/bin/c3x; \
   #### install sentry-cli
   curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
   echo "${SENTRY_HASHSUM}  sentry-cli" | sha256sum -c; \
