@@ -90,8 +90,8 @@ RUN set -eux; \
   exit 1; \
   ;; \
   esac; \
-  #### install boto3, checkov, ansible, hvac and pre-commit
-  pip3 install --no-cache-dir -U boto3 checkov==${CHECKOV_VERSION} ansible==${ANSIBLE_VERSION} hvac==${PIP_HVAC_VERSION} pre-commit jc; \
+  #### install boto3, checkov, ansible, hvac and pre-commit. Pin setuptools for distutils Ansible issue
+  pip3 install --no-cache-dir -U "setuptools<81" boto3 checkov==${CHECKOV_VERSION} ansible==${ANSIBLE_VERSION} hvac==${PIP_HVAC_VERSION} pre-commit jc; \
   #### install vault
   _vault_tmp_dir=$(mktemp -d) && cd "${_vault_tmp_dir}"; \
   curl -L "${VAULT_DOWNLOAD_URL}" -o "${_vault_tmp_dir}/vault.zip"; \
@@ -119,7 +119,7 @@ RUN set -eux; \
   mkdir /opt/c3x_bin; \
   # FIXME: workaround for c3x breaking changes in CLI
   # tar xf "${C3X_DOWNLOAD_FILE}.tar.gz" -C /opt/c3x_bin/; \
-  #rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  # rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
   # chmod +x "/opt/c3x_bin/c3x"; \
   # ln -s /opt/c3x_bin/c3x /usr/local/bin/c3x; \
   #### install sentry-cli
