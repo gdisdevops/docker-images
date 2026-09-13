@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-ARG KUBECTL_VERSION=1.34.6
+ARG KUBECTL_VERSION=1.37.0
 
 USER root
 
