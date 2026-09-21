@@ -1,6 +1,3 @@
-## FIXME: workaround for c3x breaking changes in CLI
-FROM ghcr.io/gdisdevops/docker-images/jenkins-inbound-agent:v4.3.0 AS c3x-legacy
-
 FROM jenkins/inbound-agent:alpine-jdk21
 
 USER root
@@ -11,7 +8,7 @@ ARG TERRAFORM_1_VERSION=1.15.8
 ARG KUBECTL_VERSION=1.34.6
 ARG HELM_VERSION=3.21.3
 ARG ANSIBLE_VERSION=11.13.0
-ARG C3X_VERSION=0.2.1
+ARG C3X_VERSION=0.3.4
 ARG COSIGN_VERSION=2.6.4
 ARG SENTRY_CLI_VERSION=2.58.6
 ARG CHECKOV_VERSION=3.3.8
@@ -112,16 +109,14 @@ RUN set -eux; \
   tar -xvzf "${_helm_tmp_dir}/helm.tar.gz" && chmod +x "${_helm_tmp_dir}/${HELM_FOLDER}/helm" && mv "${_helm_tmp_dir}/${HELM_FOLDER}/helm" /usr/bin; \
   cd && rm -rf "${_helm_tmp_dir}"; \
   #### install c3x
-  # C3X_DOWNLOAD_FILE="c3x_${C3X_VERSION}_linux_${ARCH}"; \
-  # curl -L -f "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz" -o "${C3X_DOWNLOAD_FILE}.tar.gz"; \
-  # curl -L -f "${C3X_DOWNLOAD_URL}/checksums.txt" -o "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  # sha256sum --ignore-missing -c "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  mkdir /opt/c3x_bin; \
-  # FIXME: workaround for c3x breaking changes in CLI
-  # tar xf "${C3X_DOWNLOAD_FILE}.tar.gz" -C /opt/c3x_bin/; \
-  # rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
-  # chmod +x "/opt/c3x_bin/c3x"; \
-  # ln -s /opt/c3x_bin/c3x /usr/local/bin/c3x; \
+  C3X_DOWNLOAD_FILE="c3x_${C3X_VERSION}_linux_${ARCH}"; \
+  curl -L -f "${C3X_DOWNLOAD_URL}/${C3X_DOWNLOAD_FILE}.tar.gz" -o "${C3X_DOWNLOAD_FILE}.tar.gz"; \
+  curl -L -f "${C3X_DOWNLOAD_URL}/checksums.txt" -o "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  sha256sum --ignore-missing -c "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  tar xf "${C3X_DOWNLOAD_FILE}.tar.gz" -C /tmp/; \
+  rm "${C3X_DOWNLOAD_FILE}.tar.gz" "${C3X_DOWNLOAD_FILE}.tar.gz.sha256"; \
+  mv /tmp/c3x /usr/local/bin/c3x; \
+  chmod +x /usr/local/bin/c3x; \
   #### install sentry-cli
   curl -L "${SENTRY_DOWNLOAD_URL}" -o sentry-cli; \
   echo "${SENTRY_HASHSUM}  sentry-cli" | sha256sum -c; \
@@ -154,10 +149,6 @@ RUN set -eux; \
   chown -R jenkins:jenkins /nix;
 
 COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-inbound-agent/bin/check-default-namespace.sh /usr/bin/
-
-## FIXME: workaround for c3x breaking changes in CLI
-COPY --from=c3x-legacy /opt/c3x_bin/c3x /opt/c3x_bin/c3x-legacy
-RUN ln -s /opt/c3x_bin/c3x-legacy /usr/local/bin/c3x
 
 USER jenkins
 
