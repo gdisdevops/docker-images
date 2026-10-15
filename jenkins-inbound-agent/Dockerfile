@@ -160,6 +160,15 @@ RUN helm plugin install --verify=false https://github.com/DaspawnW/vault-crd-hel
     --post-renderer "vault-crd-helm-renderer" && \
   rm -rf /tmp/test-chart
 
+#### install helm kustomize postrender plugin
+RUN helm plugin install https://github.com/camaeel/helm-kustomize-plugin --verify=false --version=initial && \
+  cd /tmp && helm create test-chart && \
+  mkdir -p /tmp/test/kustomization && echo -e 'apiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\nresources:\n- base.yaml' > /tmp/test/kustomization/kustomization.yaml && \
+  cat /tmp/test/kustomization/kustomization.yaml && \
+  helm template test-chart --debug --post-renderer "kustomize" --post-renderer-args "/tmp/test/kustomization" && \
+  rm -rf /tmp/test-chart /tmp/test/kustomization
+
+
 #### nix setup
 ENV PATH="/home/jenkins/.nix-profile/bin:$PATH"
 ENV NIX_PROFILES="/nix/var/nix/profiles/default /home/jenkins/.nix-profile"
