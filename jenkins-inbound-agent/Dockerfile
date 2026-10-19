@@ -161,7 +161,9 @@ RUN helm plugin install --verify=false https://github.com/DaspawnW/vault-crd-hel
   rm -rf /tmp/test-chart
 
 #### install helm kustomize postrender plugin
-RUN helm plugin install https://github.com/camaeel/helm-kustomize-plugin --verify=false --version=initial && \
+RUN wget https://github.com/camaeel/helm-kustomize-plugin/raw/refs/heads/master/helm-kustomize-plugin.gpg && \
+  helm plugin install --keyring helm-kustomize-plugin.gpg oci://ghcr.io/camaeel/helm-kustomize-plugin/kustomize:latest && \
+  rm helm-kustomize-plugin.gpg && \
   cd /tmp && helm create test-chart && \
   mkdir -p /tmp/test/kustomization && echo -e 'apiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\nresources:\n- base.yaml' > /tmp/test/kustomization/kustomization.yaml && \
   cat /tmp/test/kustomization/kustomization.yaml && \
