@@ -1,12 +1,14 @@
-FROM jenkins/inbound-agent:alpine-jdk21
+FROM jenkins/inbound-agent:alpine-jdk25
 
 USER root
+
+ARG TARGETARCH
 
 ARG VAULT_VERSION=1.21.4
 ARG PACKER_VERSION=1.15.3
 ARG TERRAFORM_1_VERSION=1.15.8
-ARG KUBECTL_VERSION=1.34.6
-ARG HELM_VERSION=3.21.3
+ARG KUBECTL_VERSION=1.35.9
+ARG HELM_VERSION=4.3.1
 ARG ANSIBLE_VERSION=11.13.0
 ARG C3X_VERSION=0.3.4
 ARG COSIGN_VERSION=2.6.4
@@ -65,7 +67,6 @@ RUN set -eux; \
   COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-arm64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=aarch64&platform=Linux&package=sentry-cli"; \
   SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-aarch64".checksums."sha256-hex"');\
-  VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
   KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/v${KYVERNO_CLI_VERSION}/kyverno-cli_v${KYVERNO_CLI_VERSION}_linux_arm64.tar.gz"; \
   TENV_DOWNLOAD_URL="https://github.com/tofuutils/tenv/releases/download/v${TENV_VERSION}/tenv_v${TENV_VERSION}_Linux_arm64.tar.gz" \
   ;; \
@@ -78,7 +79,6 @@ RUN set -eux; \
   COSIGN_DOWNLOAD_URL="https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64"; \
   SENTRY_DOWNLOAD_URL="https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}?response=download&arch=x86_64&platform=Linux&package=sentry-cli"; \
   SENTRY_HASHSUM=$(curl "https://release-registry.services.sentry.io/apps/sentry-cli/${SENTRY_CLI_VERSION}" | jq -r '.files."sentry-cli-Linux-x86_64".checksums."sha256-hex"');\
-  VAULT_CRD_RENDERER_URL="https://github.com/DaspawnW/vault-crd-helm-renderer/releases/download/v${VAULT_CRD_RENDERER_VERSION}"; \
   KYVERNO_CLI_DOWNLOAD_URL="https://github.com/kyverno/kyverno/releases/download/v${KYVERNO_CLI_VERSION}/kyverno-cli_v${KYVERNO_CLI_VERSION}_linux_x86_64.tar.gz" \
   TENV_DOWNLOAD_URL="https://github.com/tofuutils/tenv/releases/download/v${TENV_VERSION}/tenv_v${TENV_VERSION}_Linux_x86_64.tar.gz" \
   ;; \
@@ -126,12 +126,6 @@ RUN set -eux; \
   curl -L "${COSIGN_DOWNLOAD_URL}" -o cosign; \
   chmod +x cosign; \
   mv cosign /usr/bin/cosign; \
-  #### install vault crd post renderer
-  curl -L "${VAULT_CRD_RENDERER_URL}/vault-crd-helm-renderer.jar" -o vault-crd-helm-renderer.jar; \
-  curl -L "${VAULT_CRD_RENDERER_URL}/vault-crd-helm-renderer.jar.sha1" -o vault-crd-helm-renderer.jar.sha1; \
-  sha1sum vault-crd-helm-renderer.jar; \
-  mkdir -p /opt/daspawnw; \
-  mv vault-crd-helm-renderer.jar /opt/daspawnw/vault-crd-helm-renderer.jar; \
   #### install tenv
   _tenv_tmp_dir=$(mktemp -d) && cd "${_tenv_tmp_dir}"; \
   curl -L "${TENV_DOWNLOAD_URL}" -o "tenv.tar.gz"; \
@@ -148,12 +142,34 @@ RUN set -eux; \
   mkdir -p /nix/var/nix/profiles /nix/var/nix/gcroots /nix/var/nix/db; \
   chown -R jenkins:jenkins /nix;
 
-COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/post-renderer.sh jenkins-inbound-agent/bin/check-default-namespace.sh /usr/bin/
+COPY --chown=jenkins:jenkins jenkins-inbound-agent/bin/check-default-namespace.sh /usr/bin/
 
 USER jenkins
 
 #### install helm diff
-RUN helm plugin install https://github.com/databus23/helm-diff
+RUN curl -sL https://github.com/databus23.gpg | gpg --dearmor > /tmp/helm-diff.gpg && \
+    helm version && gpg --version && \
+    helm plugin install https://github.com/databus23/helm-diff/releases/latest/download/helm-diff-linux-${TARGETARCH}.tgz --keyring /tmp/helm-diff.gpg && \
+    rm /tmp/helm-diff.gpg && \
+    helm diff version
+
+#### install helm vault-crd postrenderer plugin
+RUN helm plugin install --verify=false https://github.com/DaspawnW/vault-crd-helm-renderer && \
+  cd /tmp && helm create test-chart && \
+  VAULT_ADDR='http://localhost' VAULT_TOKEN='asdasd' helm template test-chart \
+    --post-renderer "vault-crd-helm-renderer" && \
+  rm -rf /tmp/test-chart
+
+#### install helm kustomize postrender plugin
+RUN wget https://github.com/camaeel/helm-kustomize-plugin/raw/refs/heads/master/helm-kustomize-plugin.gpg && \
+  helm plugin install --keyring helm-kustomize-plugin.gpg oci://ghcr.io/camaeel/helm-kustomize-plugin/kustomize:latest && \
+  rm helm-kustomize-plugin.gpg && \
+  cd /tmp && helm create test-chart && \
+  mkdir -p /tmp/test/kustomization && echo -e 'apiVersion: kustomize.config.k8s.io/v1beta1\nkind: Kustomization\nresources:\n- base.yaml' > /tmp/test/kustomization/kustomization.yaml && \
+  cat /tmp/test/kustomization/kustomization.yaml && \
+  helm template test-chart --debug --post-renderer "kustomize" --post-renderer-args "/tmp/test/kustomization" && \
+  rm -rf /tmp/test-chart /tmp/test/kustomization
+
 
 #### nix setup
 ENV PATH="/home/jenkins/.nix-profile/bin:$PATH"
