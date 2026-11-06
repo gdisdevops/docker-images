@@ -28,7 +28,7 @@ RUN mkdir -p /etc/nix && echo "sandbox = false" >> /etc/nix/nix.conf
 RUN echo "filter-syscalls = false" >> /etc/nix/nix.conf
 
 RUN set -eux; \
-  apk update && \
+  apk upgrade --no-cache && \
   apk add --no-cache \
   curl \
   ca-certificates \
