@@ -6,36 +6,36 @@
     "ignorePresets": [
         ":prHourlyLimit2"
     ],
-    "baseBranches": [
+    "baseBranchPatterns": [
         "master"
     ],
     "branchConcurrentLimit": 20,
     "prConcurrentLimit": 10,
     "prHourlyLimit": 10,
     "enabledManagers": [
-        "regex"
+        "custom.regex"
     ],
     "packageRules": [
         {
-            "matchPackagePatterns": [
-                "*"
-            ],
             "matchUpdateTypes": [
                 "major"
             ],
             "groupName": "major dependency updates",
-            "groupSlug": "major"
+            "groupSlug": "major",
+            "matchPackageNames": [
+                "*"
+            ]
         },
         {
-            "matchPackagePatterns": [
-                "*"
-            ],
             "matchUpdateTypes": [
                 "minor",
                 "patch"
             ],
             "groupName": "minor and patch dependency updates",
-            "groupSlug": "non-major"
+            "groupSlug": "non-major",
+            "matchPackageNames": [
+                "*"
+            ]
         },
         {
             "matchDatasources": [
@@ -77,177 +77,117 @@
             "versioning": "hashicorp"
         }
     ],
-    "regexManagers": [
+    "customManagers": [
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sVAULT_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sVAULT_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "hashicorp/vault",
             "datasourceTemplate": "github-releases"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sPACKER_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sPACKER_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "hashicorp/packer",
             "datasourceTemplate": "github-releases"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sTERRAFORM_1_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sTERRAFORM_1_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "hashicorp/terraform",
             "datasourceTemplate": "github-releases"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sHELM_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sHELM_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "helm/helm",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sANSIBLE_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sANSIBLE_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "ansible",
             "datasourceTemplate": "pypi"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sCONFTEST_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sCONFTEST_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "open-policy-agent/conftest",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sCOSIGN_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sCOSIGN_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "sigstore/cosign",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sSENTRY_CLI_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sSENTRY_CLI_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "getsentry/sentry-cli",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^(?<version>.*)$"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sCHECKOV_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sCHECKOV_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "checkov",
             "datasourceTemplate": "pypi"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sVAULT_CRD_RENDERER_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sVAULT_CRD_RENDERER_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "DaspawnW/vault-crd-helm-renderer",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sKYVERNO_CLI_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sKYVERNO_CLI_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "kyverno/kyverno",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sC3X_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sC3X_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "c3xdev/c3x",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sPIP_HVAC_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sPIP_HVAC_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "hvac",
             "datasourceTemplate": "pypi"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sKUBECTL_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sKUBECTL_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "kubernetes/kubernetes",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
         },
         {
             "customType": "regex",
-            "fileMatch": [
-                ".*\\/Dockerfile"
-            ],
-            "matchStrings": [
-                ".*\\sTENV_VERSION=(?<currentValue>\\d.*\\.?)"
-            ],
+            "managerFilePatterns": ["/.*\\/Dockerfile/"],
+            "matchStrings": [".*\\sTENV_VERSION=(?<currentValue>\\d.*\\.?)"],
             "depNameTemplate": "tofuutils/tenv",
             "datasourceTemplate": "github-releases",
             "extractVersionTemplate": "^v(?<version>.*)$"
